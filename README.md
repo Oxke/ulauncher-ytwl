@@ -9,5 +9,6 @@ Simple ulauncher extension for having a youtube watchlist that updates at each n
 - Subscribes to playlists and automatically adds new videos to the watchlist
 
 ## Setup for systemd
+run the following commands:
 `sudo mv .local/share/ulauncher/extensions/com.github.oxke.ulauncher-ytwl/ytfp.* /etc/systemd/system/`
-
+`systemctl enable ytfp.timer`
