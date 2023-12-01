@@ -1,0 +1,50 @@
+{
+  "required_api_version": "2",
+  "name": "Youtube Lazy Watch Later",
+  "description": "Adds a video to a watch list without opening the video page and then you can watch the video later in mpv",
+  "developer_name": "Oxke",
+  "icon": "images/icon.png",
+  "options": {
+    "query_debounce": 0.05
+  },
+  "preferences": [
+    {
+      "id": "kw",
+      "type": "keyword",
+      "name": "YLWL Keyword",
+      "default_value": "y"
+    },
+    {
+        "id": "append",
+        "type": "input",
+        "name": "Add new video to watchlist or subscribe to new channel or playlist",
+        "default_value": "a",
+        "description": "To add a playlist write after a the playlist id, otherwise send the url for adding a video or subscribing to a channel"
+    },
+    {
+        "id": "remove",
+        "type": "input",
+        "name": "Remove video from watchlist or unsubscribe from channel or playlist",
+        "default_value": "r"
+    },
+    {
+        "id": "watch",
+        "type": "input",
+        "name": "Watch next video in watchlist",
+        "default_value": "w"
+    },
+    {
+        "id": "getqueue",
+        "type": "input",
+        "name": "Get the last 10 videos of watchlist and choose to watch one of them",
+        "default_value": "q"
+    },
+    {
+        "id": "yt_apikey",
+        "type": "input",
+        "name": "Youtube API key",
+        "default_value": "",
+        "description": "can get one for free from https://console.developers.google.com/apis/credentials, remember to enable the Youtube Data API v3"
+    }
+  ]
+}
