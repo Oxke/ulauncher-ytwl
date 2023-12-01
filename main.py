@@ -120,7 +120,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
         try:
             if channel_id.startswith('@'):
                 channel_id = requests.get(yt_search,
-                                          params={'q':channel_id[1:],'part':'snippet',
+                                          params={'q':channel_id,'part':'snippet',
                                           'key':yt_apikey}).json()['items'][0]['id']['channelId']
 
             assert channel_id.startswith('UC'), f'Invalid channel id: {channel_id}'
@@ -143,7 +143,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
                 return RenderResultListAction(items)
 
             channel_info = requests.get(ch_info, params={'id':channel_id,'part':['snippet','contentDetails'],'key':yt_apikey})
-            assert channel_info.status_code == 200, 'Error fetching channel'
+            assert channel_info.status_code == 200, 'Error {channel_info.status_code}'
             channel_info = channel_info.json()['items'][0]
             channel_title = channel_info['snippet']['title']
 
