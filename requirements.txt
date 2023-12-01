@@ -1,0 +1,5 @@
+feedparser==6.0.10
+isodate==0.6.1
+pytz==2023.3.post1
+Requests==2.31.0
+ulauncher==5.15.6
