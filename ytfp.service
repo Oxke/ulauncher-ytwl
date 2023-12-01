@@ -1,0 +1,6 @@
+[Unit]
+Description=Youtube Lazy Watch Later ulauncher extension
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /etc/systemd/system/ytfp.sh

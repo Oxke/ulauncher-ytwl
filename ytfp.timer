@@ -1,0 +1,9 @@
+[Unit]
+Description=Timer for ytfp ulauncher extension
+
+[Timer]
+OnBootSec=10min
+OnCalendar=hourly
+
+[Install]
+WantedBy=timers.target
