@@ -12,8 +12,9 @@ from ulauncher.api.shared.action.RenderResultListAction import RenderResultListA
 from ulauncher.api.shared.action.HideWindowAction import HideWindowAction
 from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
 
-WATCHLIST = r"/home/oxke/.local/share/ulauncher/extensions/ulauncher-ytlazy/watchlist"
-HERE = r"/home/oxke/.local/share/ulauncher/extensions/ulauncher-ytlazy"
+HERE = os.path.dirname(os.path.abspath(__file__))
+WATCHLIST = HERE + "/watchlist"
+SUBSCRIPTIONS = HERE + "/subscriptions"
 yt_info = "https://www.googleapis.com/youtube/v3/videos"
 pl_info = "https://www.googleapis.com/youtube/v3/playlists"
 ch_info = "https://www.googleapis.com/youtube/v3/channels"
@@ -78,7 +79,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
         if remove:
             action_done = "Playlist not found in subscriptions" if not os.path.isfile(HERE+f"/images/{playlist_id}.png") else "REMOVED: " + playlist_id
             if action_done.startswith('R'):
-                with open(HERE+r"/subscriptions", 'r+') as f:
+                with open(SUBSCRIPTIONS, 'r+') as f:
                     lines = f.readlines()
                     if lines:
                         lines = [line for line in lines if line.split(' | ')[0] != playlist_id]
@@ -97,7 +98,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
             playlist_info = playlist_info.json()['items'][0]
             playlist_title = playlist_info['snippet']['title']
 
-            with open(HERE+r"/subscriptions", 'r+') as f:
+            with open(SUBSCRIPTIONS, 'r+') as f:
                 if playlist_id not in f.read():
                     f.write(playlist_id + " | " + playlist_title + " "*(23-len(playlist_title)) + '| \n')
 
@@ -128,7 +129,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
             if remove:
                 action_done = "Channel not found in subscriptions" if not os.path.isfile(HERE+f"/images/{channel_id}.png") else "REMOVED: " + channel_id
                 if action_done.startswith('R'):
-                    with open(HERE+r"/subscriptions", 'r+') as f:
+                    with open(SUBSCRIPTIONS, 'r+') as f:
                         lines = f.readlines()
                         if lines:
                             lines = [line for line in lines if line.split('|')[0].strip() != channel_id]
@@ -147,7 +148,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
             channel_info = channel_info.json()['items'][0]
             channel_title = channel_info['snippet']['title']
 
-            with open(HERE+r"/subscriptions", 'r+') as f:
+            with open(SUBSCRIPTIONS, 'r+') as f:
                 if channel_id not in f.read():
                     f.write(channel_id + "           | " + channel_title + " "*(23-len(channel_title)) + '| \n')
 
