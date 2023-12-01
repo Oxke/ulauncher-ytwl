@@ -333,6 +333,7 @@ class KeywordQueryEventListener(EventListener):
                     on_enter=HideWindowAction(),
                 )
             )
+            return RenderResultListAction(items)
         if event.get_argument() and event.get_argument().startswith(append):
             items.append(
                 ExtensionResultItem(
