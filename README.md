@@ -8,12 +8,12 @@ Simple ulauncher extension for having a youtube watchlist that updates at each n
 - Subscribes to channels and automatically adds new videos to the watchlist
 - Subscribes to playlists and automatically adds new videos to the watchlist
 
+
 ## Setup
 - Get an API key from the [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
 - Activate the YouTube Data API v3
 - Add the key in the settings of the extension
 - _(systemd)_ run the following commands:
     ```bash
-    sudo cp .local/share/ulauncher/extensions/com.github.oxke.ulauncher-ytwl/ytfp.* /etc/systemd/system/
-    systemctl enable ytfp.timer
+    sudo sh -c "~/.local/share/ulauncher/extensions/com.github.oxke.ulauncher-ytwl/install.sh"
     ```
