@@ -62,17 +62,25 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
             return RenderResultListAction(items)
         with open(WATCHLIST, 'a') as f:
             f.write(video_id + '\n')
-        video_info = requests.get(yt_info, params={'id':video_id,'part':['snippet','contentDetails'],'key':yt_apikey},
-                                   timeout=5).json()['items'][0]
-        video_title = video_info['snippet']['title']
-        video_channl = video_info['snippet']['channelTitle']
-        video_duration = str(parse_duration(video_info['contentDetails']['duration']))
-        video_published = datetime.fromisoformat(video_info['snippet']['publishedAt']).strftime('%-d %b, %H:%M')
-        video_subtitle = [video_channl, video_duration, video_published, 'enter to watch immediately']
-        items = [ExtensionResultItem(icon='images/append.png',
-                                     name='AGGIUNTO: ' + video_title,
-                                     description=' - '.join(video_subtitle),
+        try:
+            video_info = requests.get(yt_info, params={'id':video_id,'part':['snippet','contentDetails'],'key':yt_apikey},
+                                       timeout=5)
+            assert video_info.status_code == 200, f'Error code {video_info.status_code}'
+            video_info = video_info.json()['items'][0]
+            video_title = video_info['snippet']['title']
+            video_channl = video_info['snippet']['channelTitle']
+            video_duration = str(parse_duration(video_info['contentDetails']['duration']))
+            video_published = datetime.fromisoformat(video_info['snippet']['publishedAt']).strftime('%-d %b, %H:%M')
+            video_subtitle = [video_channl, video_duration, video_published, 'enter to watch immediately']
+            items = [ExtensionResultItem(icon='images/append.png',
+                                         name='ADDED: ' + video_title,
+                                         description=' - '.join(video_subtitle),
                                      on_enter=ExtensionCustomAction("q" + video_id))]
+        except Exception as e:
+            items = [ExtensionResultItem(icon='images/error.png',
+                                         name='Error fetching video',
+                                         description=str(e),
+                                         on_enter=HideWindowAction())]
 
     elif m_playlist:
         playlist_id = url
