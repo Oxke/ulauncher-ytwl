@@ -1,7 +1,7 @@
 # ulauncher-ytwl
 Simple ulauncher extension for having a youtube watchlist that updates at each new video from subscribed channels
 
-![2023-12-01\_01-29](https://github.com/Oxke/ulauncher-ytwl/assets/40807290/74117663-8677-48a8-8e0f-6c596a661935)
+![2023-12-01_01-29](https://github.com/Oxke/ulauncher-ytwl/assets/40807290/68f126bf-f83e-4893-b2a1-b67d8fca4157)
 
 ## Features
 - Stores a watchlist of youtube videos
