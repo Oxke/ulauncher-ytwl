@@ -8,7 +8,8 @@ Simple ulauncher extension for having a youtube watchlist that updates at each n
 - Subscribes to channels and automatically adds new videos to the watchlist
 - Subscribes to playlists and automatically adds new videos to the watchlist
 
-## Setup for systemd
+## Setup
+- Get a Youtube Data API v3 key from the [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
 run the following commands:
 
 ```bash
