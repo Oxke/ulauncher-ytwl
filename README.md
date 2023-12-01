@@ -1,3 +1,4 @@
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 # ulauncher-ytwl
 Simple ulauncher extension for having a youtube watchlist that updates at each new video from subscribed channels
 
