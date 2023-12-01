@@ -217,6 +217,11 @@ class KeywordQueryEventListener(EventListener):
         remove = extension.preferences['remove']
         watch = extension.preferences['watch']
         getqueue = extension.preferences['getqueue']
+        if extension.preferences['yt_apikey'] == '':
+            items.append(ExtensionResultItem(icon='images/error.png',
+                                             name='No Youtube API key',
+                                             description='Please set it in preferences',
+                                             on_enter=HideWindowAction()))
         if event.get_argument() and event.get_argument().startswith(append):
             items.append(ExtensionResultItem(icon='images/append.png',
                                              name="Append " + event.get_argument()[2:],
