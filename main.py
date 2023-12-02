@@ -2,6 +2,7 @@ import re
 import os
 import subprocess
 import requests
+from random import randint
 from datetime import datetime
 from isodate import parse_duration
 from ulauncher.api.client.Extension import Extension
@@ -19,17 +20,22 @@ yt_info = "https://www.googleapis.com/youtube/v3/videos"
 pl_info = "https://www.googleapis.com/youtube/v3/playlists"
 ch_info = "https://www.googleapis.com/youtube/v3/channels"
 yt_search = "https://www.googleapis.com/youtube/v3/search"
+yt_watch = "https://www.youtube.com/watch?v="
 
 
-def WatchVideo(vid=None):
+def WatchVideo(vid=None, stack=False, random=False):
     with open(WATCHLIST, "r+") as f:
         lines = f.readlines()
         if lines:
             if vid:
-                url = "https://www.youtube.com/watch?v=" + vid
+                url = yt_watch + vid
                 lines = [line for line in lines if line[:-1] != vid]
+            elif stack:
+                url = yt_watch + lines.pop()
+            elif random:
+                url = yt_watch + lines.pop(randint(0, len(lines) - 1))
             else:
-                url = "https://www.youtube.com/watch?v=" + lines.pop(0)
+                url = yt_watch + lines.pop(0)
             f.seek(0)
             f.writelines(lines)
             f.truncate()
@@ -306,7 +312,14 @@ class ItemEnterEventListener(EventListener):
         watch = extension.preferences["watch"]
         getqueue = extension.preferences["getqueue"]
         if event.get_data() == watch:
-            return WatchVideo()
+            wm = extension.preferences["watchlist-mode"]
+            return (
+                WatchVideo(stack=True)
+                if wm == "Stack"
+                else WatchVideo(random=True)
+                if wm == "Random"
+                else WatchVideo()
+            )
         if event.get_data().startswith(append) or event.get_data().startswith(remove):
             return AppendToQueue(
                 event.get_data()[2:],
@@ -314,7 +327,7 @@ class ItemEnterEventListener(EventListener):
                 remove=event.get_data().startswith(remove),
             )
         if event.get_data().startswith(getqueue):
-            return WatchVideo(event.get_data()[1:])
+            return WatchVideo(vid=event.get_data()[1:])
 
 
 class KeywordQueryEventListener(EventListener):
@@ -360,7 +373,7 @@ class KeywordQueryEventListener(EventListener):
             items.append(
                 ExtensionResultItem(
                     icon="images/watch.png",
-                    name="Watch next video in queue",
+                    name="Watch next video in watchlist",
                     description="If there's any that is",
                     on_enter=ExtensionCustomAction(event.get_argument()),
                 )

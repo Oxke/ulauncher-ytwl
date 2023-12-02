@@ -34,6 +34,17 @@
         "default_value": "w"
     },
     {
+        "id": "watchlist-mode",
+        "type": "select",
+        "name": "Watchlist mode",
+        "default_value": "Queue",
+        "options": [
+            "Stack",
+            "Queue",
+            "Random"
+        ]
+    },
+    {
         "id": "getqueue",
         "type": "input",
         "name": "Get the last 10 videos of watchlist and choose to watch one of them",
