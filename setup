@@ -1,6 +1,6 @@
 here=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-echo "sh -c \"/usr/bin/python $here/fp.py >> $here/fp.log\"" >> ytfp.sh
+echo "sh -c \"/usr/bin/python $here/fp.py >> $here/fp.log\"" >> $here/ytfp.sh
 sudo cp $here/ytfp.* /etc/systemd/system/
 
 systemctl enable ytfp.timer
