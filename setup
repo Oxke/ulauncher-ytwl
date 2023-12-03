@@ -1,6 +1,6 @@
-here=~/.local/share/ulauncher/extensions/com.github.oxke.ulauncher-ytwl
-pip install $here/requirements.txt
+here=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 sudo cp $here/ytfp.* /etc/systemd/system/
 systemctl enable ytfp.timer
-touch $here/subscriptions2
-touch $here/watchlist2
+touch $here/subscriptions
+touch $here/watchlist
+pip install $here/requirements.txt --user
