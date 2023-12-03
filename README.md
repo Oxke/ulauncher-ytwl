@@ -16,5 +16,5 @@ Simple ulauncher extension for having a youtube watchlist that updates at each n
 - Add the key in the settings of the extension
 - _(systemd)_ run the following commands:
     ```bash
-    sudo bash ~/.local/share/ulauncher/extensions/com.github.oxke.ulauncher-ytwl/install.sh
+    sudo bash ~/.local/share/ulauncher/extensions/com.github.oxke.ulauncher-ytwl/setup
     ```
