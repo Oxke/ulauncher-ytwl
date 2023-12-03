@@ -4,7 +4,9 @@ echo "sh -c \"/usr/bin/python $here/fp.py >> $here/fp.log\"" >> $here/ytfp.sh
 sudo cp $here/ytfp.* /etc/systemd/system/
 
 systemctl enable ytfp.timer
+
 touch $here/subscriptions
 touch $here/watchlist
+touch $here/fp.log
 
 pip install $here/requirements.txt --user
