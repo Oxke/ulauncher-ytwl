@@ -41,7 +41,7 @@ def WatchVideo(vid=None, stack=False, random=False):
             f.truncate()
         else:
             url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-    subprocess.run(["mpv", url])
+    subprocess.Popen(["mpv", url])
     return HideWindowAction()
 
 
