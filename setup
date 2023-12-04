@@ -1,9 +1,10 @@
 here=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+user=$(whoami)
 
 echo "sh -c \"/usr/bin/python $here/fp.py >> $here/fp.log\"" >> $here/ytfp.sh
-sudo cp $here/ytfp.* /etc/systemd/system/
+sudo cp $here/ytfp.* /home/$user/.config/systemd/user/
 
-systemctl enable ytfp.timer
+systemctl --user enable ytfp.timer
 
 touch $here/subscriptions
 touch $here/watchlist
