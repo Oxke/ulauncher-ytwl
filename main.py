@@ -302,7 +302,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
 
 def Search(query, yt_apikey=None, append='a'):
     try:
-        videos_info = requests.get(
+        search_results = requests.get(
             yt_search,
             params={
                 "q": query,
@@ -310,28 +310,58 @@ def Search(query, yt_apikey=None, append='a'):
                 "key": yt_apikey,
             },
         )
-        assert videos_info.status_code == 200, f"Error code {videos_info.status_code}"
-        videos_info = videos_info.json()["items"]
+        assert search_results.status_code == 200, f"Error code {search_results.status_code}"
+        search_results = search_results.json()["items"]
         items = []
-        for video_info in videos_info:
-            video_title = video_info["snippet"]["title"]
-            video_channl = video_info["snippet"]["channelTitle"]
-            video_channl_id = video_info["snippet"]["channelId"]
-            video_id = video_info["id"]["videoId"]
-            video_published = datetime.fromisoformat(
-                video_info["snippet"]["publishedAt"]
-            ).strftime("%H:%M, %b %-d, %y")
-            video_subtitle = [video_channl, video_published]
-            items.append(
-                ExtensionResultItem(
-                    icon=f"{IMAGES}/{video_channl_id}.png"
-                    if os.path.isfile(f"{IMAGES}/{video_channl_id}.png")
-                    else "images/icon.png",
-                    name=video_title,
-                    description=" - ".join(video_subtitle),
-                    on_enter=ExtensionCustomAction(f"{append} {yt_watch}{video_id}", keep_app_open=True)
+        for result in search_results:
+            title = result["snippet"]["title"]
+            channl = result["snippet"]["channelTitle"]
+            channl_id = result["snippet"]["channelId"]
+            kind = result["id"]["kind"].split("#")[1]
+            if kind == "channel":
+                items.append(
+                    ExtensionResultItem(
+                        icon="images/channel.png",
+                        name=title,
+                        description="Enter to subscribe to channel",
+                        on_enter=ExtensionCustomAction(f"{append} https://www.youtube.com/channel/{channl_id}", keep_app_open=True)
+
+                        )
+                    )
+            elif kind == "playlist":
+                items.append(
+                    ExtensionResultItem(
+                        icon="images/playlist.png",
+                        name=title,
+                        description="Enter to subscribe to playlist",
+                        on_enter=ExtensionCustomAction(f"{append} {result['id']['playlistId']}", keep_app_open=True)
+                    )
                 )
-            )
+            elif kind == "video":
+                video_id = result["id"]["videoId"]
+                video_published = datetime.fromisoformat(
+                    result["snippet"]["publishedAt"]
+                ).strftime("%H:%M, %b %-d, %y")
+                video_subtitle = [channl, video_published]
+                items.append(
+                    ExtensionResultItem(
+                        icon=f"{IMAGES}/{channl_id}.png"
+                        if os.path.isfile(f"{IMAGES}/{channl_id}.png")
+                        else "images/icon.png",
+                        name=title,
+                        description=" - ".join(video_subtitle),
+                        on_enter=ExtensionCustomAction(f"{append} {yt_watch}{video_id}", keep_app_open=True)
+                    )
+                )
+            else:
+                items.append(
+                    ExtensionResultItem(
+                        icon="images/error.png",
+                        name="Didn't recognize this kind of result",
+                        description="Please report this issue, specifying the query",
+                        on_enter=HideWindowAction(),
+                    )
+                )
     except Exception as e:
         items = [
             ExtensionResultItem(
