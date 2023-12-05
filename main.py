@@ -441,7 +441,7 @@ class KeywordQueryEventListener(EventListener):
         elif event.get_argument() and event.get_argument().startswith(append):
             items.append(
                 ExtensionResultItem(
-                    icon="images/append.png",
+                    icon="images/search.png",
                     name="Append " + event.get_argument()[2:],
                     description="I'll check if it's a valid youtube link",
                     on_enter=ExtensionCustomAction(
