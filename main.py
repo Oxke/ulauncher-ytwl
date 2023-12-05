@@ -329,7 +329,7 @@ def Search(query, yt_apikey=None, append='a'):
                     else "images/icon.png",
                     name=video_title,
                     description=" - ".join(video_subtitle),
-                    on_enter=ExtensionCustomAction(f"{append} {yt_watch}{video_id}")
+                    on_enter=ExtensionCustomAction(f"{append} {yt_watch}{video_id}", keep_app_open=True)
                 )
             )
     except Exception as e:
