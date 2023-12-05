@@ -15,6 +15,12 @@
       "default_value": "y"
     },
     {
+        "id": "search",
+        "type": "keyword",
+        "name": "Search for a video",
+        "default_value": "s"
+    },
+    {
         "id": "append",
         "type": "input",
         "name": "Add new video to watchlist or subscribe to new channel or playlist",

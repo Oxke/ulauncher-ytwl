@@ -299,6 +299,53 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
         ]
     return RenderResultListAction(items)
 
+def Search(query, yt_apikey=None, append='a'):
+    try:
+        videos_info = requests.get(
+            yt_search,
+            params={
+                "q": query,
+                "part": ["snippet", "contentDetails"],
+                "key": yt_apikey,
+            },
+            timeout=5,
+        )
+        assert videos_info.status_code == 200, f"Error code {videos_info.status_code}"
+        videos_info = videos_info.json()["items"]
+        items = []
+        for video_info in videos_info:
+            video_title = video_info["snippet"]["title"]
+            video_channl = video_info["snippet"]["channelTitle"]
+            video_channl_id = video_info["snippet"]["channelId"]
+            video_id = video_info["id"]["videoId"]
+            video_duration = str(
+                parse_duration(video_info["contentDetails"]["duration"])
+            )
+            video_published = datetime.fromisoformat(
+                video_info["snippet"]["publishedAt"]
+            ).strftime("%H:%M, %b %-d, %y")
+            video_subtitle = [video_channl, video_duration, video_published]
+            items.append(
+                ExtensionResultItem(
+                    icon=f"{IMAGES}/{video_channl_id}.png"
+                    if os.path.isfile(f"{IMAGES}/{video_channl_id}.png")
+                    else "images/icon.png",
+                    name=video_title,
+                    description=" - ".join(video_subtitle),
+                    on_enter=ExtensionCustomAction(f"{append} {yt_watch}{video_id}")
+                )
+            )
+    except Exception as e:
+        items = [
+            ExtensionResultItem(
+                icon="images/error.png",
+                name="Error fetching videos",
+                description=str(e),
+                on_enter=HideWindowAction(),
+            )
+        ]
+    return RenderResultListAction(items)
+
 
 class YTLWExtension(Extension):
     def __init__(self):
@@ -309,10 +356,14 @@ class YTLWExtension(Extension):
 
 class ItemEnterEventListener(EventListener):
     def on_event(self, event, extension):
+        search = extension.preferences["search"]
         append = extension.preferences["append"]
         remove = extension.preferences["remove"]
         watch = extension.preferences["watch"]
         getqueue = extension.preferences["getqueue"]
+        if event.get_data().startswith(search):
+            return Search(event.get_data()[2:],
+                          extension.preferences["yt_apikey"], append)
         if event.get_data() == watch:
             wm = extension.preferences["watchlist-mode"]
             return (
@@ -335,6 +386,7 @@ class ItemEnterEventListener(EventListener):
 class KeywordQueryEventListener(EventListener):
     def on_event(self, event, extension):
         items = []
+        search = extension.preferences["search"]
         append = extension.preferences["append"]
         remove = extension.preferences["remove"]
         watch = extension.preferences["watch"]
@@ -349,7 +401,15 @@ class KeywordQueryEventListener(EventListener):
                 )
             )
             return RenderResultListAction(items)
-        if event.get_argument() and event.get_argument().startswith(append):
+        if event.get_argument() and event.get_argument().startswith(search):
+            items.append(
+                ExtensionResultItem(
+                    icon="images/search.png",
+                    name="Search " + event.get_argument()[2:],
+                    description="Press enter to search for videos",
+                    on_enter=ExtensionCustomAction(event.get_argument()),keep_app_open=True)
+                )
+        elif event.get_argument() and event.get_argument().startswith(append):
             items.append(
                 ExtensionResultItem(
                     icon="images/append.png",
