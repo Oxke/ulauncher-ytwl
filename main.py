@@ -127,7 +127,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
         if remove:
             action_done = (
                 "Playlist not found in subscriptions"
-                if not os.path.isfile(HERE + f"/images/{playlist_id}.png")
+                if not os.path.isfile(IMAGES + f"/{playlist_id}.png")
                 else "REMOVED: " + playlist_id
             )
             if action_done.startswith("R"):
@@ -142,7 +142,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
                         f.seek(0)
                         f.writelines(lines)
                         f.truncate()
-                os.system("rm " + HERE + f"/images/{playlist_id}.png")
+                os.system("rm " + IMAGES + f"/{playlist_id}.png")
             items = [
                 ExtensionResultItem(
                     icon="images/remove.png",
@@ -178,9 +178,9 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
             playlist_description = playlist_info["snippet"]["description"]
             thumb = playlist_info["snippet"]["thumbnails"]["medium"]["url"]
             os.system(
-                f"wget -O {HERE}/images/{playlist_id}.jpg {thumb} && "
-                + f"convert {HERE}/images/{playlist_id}.jpg {HERE}/images/{playlist_id}.png && "
-                + f"rm {HERE}/images/{playlist_id}.jpg"
+                f"wget -O {IMAGES}/{playlist_id}.jpg {thumb} && "
+                + f"convert {IMAGES}/{playlist_id}.jpg {IMAGES}/{playlist_id}.png && "
+                + f"rm {IMAGES}/{playlist_id}.jpg"
             )
             items = [
                 ExtensionResultItem(
@@ -213,7 +213,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
             if remove:
                 action_done = (
                     "Channel not found in subscriptions"
-                    if not os.path.isfile(HERE + f"/images/{channel_id}.png")
+                    if not os.path.isfile(IMAGES + f"/{channel_id}.png")
                     else "REMOVED: " + channel_id
                 )
                 if action_done.startswith("R"):
@@ -228,7 +228,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
                             f.seek(0)
                             f.writelines(lines)
                             f.truncate()
-                    os.system("rm " + HERE + f"/images/{channel_id}.png")
+                    os.system(f"rm {IMAGES}/{channel_id}.png")
                 items = [
                     ExtensionResultItem(
                         icon="images/remove.png",
@@ -264,9 +264,9 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
             channel_description = channel_info["snippet"]["description"]
             thumb = channel_info["snippet"]["thumbnails"]["medium"]["url"]
             os.system(
-                f"wget -O {HERE}/images/{channel_id}.jpg {thumb} && "
-                + f"convert {HERE}/images/{channel_id}.jpg {HERE}/images/{channel_id}.png && "
-                + f"rm {HERE}/images/{channel_id}.jpg"
+                f"wget -O {IMAGES}/{channel_id}.jpg {thumb} && "
+                + f"convert {IMAGES}/{channel_id}.jpg {IMAGES}/{channel_id}.png && "
+                + f"rm {IMAGES}/{channel_id}.jpg"
             )
 
             items = [
@@ -409,7 +409,7 @@ class KeywordQueryEventListener(EventListener):
                     items.append(
                         ExtensionResultItem(
                             icon=f"images/{video_channl_id}.png"
-                            if os.path.isfile(f"{HERE}/images/{video_channl_id}.png")
+                            if os.path.isfile(f"{IMAGES}/{video_channl_id}.png")
                             else "images/icon.png",
                             name=video_title,
                             description=" - ".join(video_subtitle),
