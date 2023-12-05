@@ -299,6 +299,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
         ]
     return RenderResultListAction(items)
 
+
 def Search(query, yt_apikey=None, append='a'):
     try:
         videos_info = requests.get(
@@ -308,7 +309,6 @@ def Search(query, yt_apikey=None, append='a'):
                 "part": "snippet",
                 "key": yt_apikey,
             },
-            timeout=5,
         )
         assert videos_info.status_code == 200, f"Error code {videos_info.status_code}"
         videos_info = videos_info.json()["items"]
