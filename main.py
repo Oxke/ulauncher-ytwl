@@ -13,9 +13,10 @@ from ulauncher.api.shared.action.RenderResultListAction import RenderResultListA
 from ulauncher.api.shared.action.HideWindowAction import HideWindowAction
 from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-WATCHLIST = HERE + "/watchlist"
-SUBSCRIPTIONS = HERE + "/subscriptions"
+CONFIG = os.environ.get("HOME") + "/.config/ulauncher/extensions/com.github.oxke.ytlw"
+WATCHLIST = CONFIG + "/watchlist"
+SUBSCRIPTIONS = CONFIG + "/subscriptions"
+IMAGES = CONFIG + "/images"
 yt_info = "https://www.googleapis.com/youtube/v3/videos"
 pl_info = "https://www.googleapis.com/youtube/v3/playlists"
 ch_info = "https://www.googleapis.com/youtube/v3/channels"

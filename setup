@@ -1,13 +1,16 @@
 here=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 user=$(whoami)
+config=/home/$user/.config/ulauncher/com.github.oxke.ulauncher-ytwl
 
 echo "sh -c \"/usr/bin/python $here/fp.py >> $here/fp.log\"" >> $here/ytfp.sh
 sudo cp $here/ytfp.* /home/$user/.config/systemd/user/
 
 systemctl --user enable ytfp.timer
 
-touch $here/subscriptions
-touch $here/watchlist
-touch $here/fp.log
+mkdir $config
+touch $config/subscriptions
+touch $config/watchlist
+touch $config/fp.log
+mv $here/lastfetched_ytfp $config/lastfetched_ytfp
 
 pip install $here/requirements.txt --user
