@@ -6,7 +6,7 @@ import os
 
 CHANNEL_URL = "https://www.youtube.com/feeds/videos.xml?channel_id="
 PLAYLIST_URL = "https://www.youtube.com/feeds/videos.xml?playlist_id="
-CONFIG = os.environ.get("HOME") + "/.config/ulauncher/com.github.oxke.ulauncher-ytlw/"
+CONFIG = os.environ.get("HOME") + "/.config/ulauncher/com.github.oxke.ulauncher-ytwl/"
 
 
 def get_last_fetched():
