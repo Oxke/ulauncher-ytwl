@@ -407,7 +407,9 @@ class KeywordQueryEventListener(EventListener):
                     icon="images/search.png",
                     name="Search " + event.get_argument()[2:],
                     description="Press enter to search for videos",
-                    on_enter=ExtensionCustomAction(event.get_argument()),keep_app_open=True)
+                    on_enter=ExtensionCustomAction(event.get_argument(),
+                                                   keep_app_open=True)
+                )
                 )
         elif event.get_argument() and event.get_argument().startswith(append):
             items.append(
