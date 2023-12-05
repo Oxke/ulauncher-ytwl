@@ -17,7 +17,7 @@ HERE = os.path.dirname(os.path.realpath(__file__))
 CONFIG = os.environ.get("HOME") + "/.config/ulauncher/com.github.oxke.ulauncher-ytwl"
 WATCHLIST = CONFIG + "/watchlist"
 SUBSCRIPTIONS = CONFIG + "/subscriptions"
-IMAGES = HERE + "/images"
+IMAGES = CONFIG + "/images"
 yt_info = "https://www.googleapis.com/youtube/v3/videos"
 pl_info = "https://www.googleapis.com/youtube/v3/playlists"
 ch_info = "https://www.googleapis.com/youtube/v3/channels"
@@ -185,7 +185,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
             )
             items = [
                 ExtensionResultItem(
-                    icon=f"images/{playlist_id}.png",
+                    icon=f"{IMAGES}/{playlist_id}.png",
                     name="ADDED PLAYLIST: " + playlist_title,
                     description=playlist_description,
                     on_enter=HideWindowAction(),
@@ -272,7 +272,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
 
             items = [
                 ExtensionResultItem(
-                    icon=f"images/{channel_id}.png",
+                    icon=f"{IMAGES}/{channel_id}.png",
                     name="ADDED CHANNEL: " + channel_title,
                     description=channel_description,
                     on_enter=HideWindowAction(),
@@ -409,7 +409,7 @@ class KeywordQueryEventListener(EventListener):
                     video_subtitle = [video_channl, video_duration, video_published]
                     items.append(
                         ExtensionResultItem(
-                            icon=f"images/{video_channl_id}.png"
+                            icon=f"{IMAGES}/{video_channl_id}.png"
                             if os.path.isfile(f"{IMAGES}/{video_channl_id}.png")
                             else "images/icon.png",
                             name=video_title,
