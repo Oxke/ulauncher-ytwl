@@ -13,7 +13,7 @@ from ulauncher.api.shared.action.RenderResultListAction import RenderResultListA
 from ulauncher.api.shared.action.HideWindowAction import HideWindowAction
 from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
 
-CONFIG = os.environ.get("HOME") + "/.config/ulauncher/extensions/com.github.oxke.ytlw"
+CONFIG = os.environ.get("HOME") + "/.config/ulauncher/com.github.oxke.ytlw"
 WATCHLIST = CONFIG + "/watchlist"
 SUBSCRIPTIONS = CONFIG + "/subscriptions"
 IMAGES = CONFIG + "/images"
