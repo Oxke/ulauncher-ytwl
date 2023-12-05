@@ -305,7 +305,7 @@ def Search(query, yt_apikey=None, append='a'):
             yt_search,
             params={
                 "q": query,
-                "part": ["snippet", "contentDetails"],
+                "part": "snippet",
                 "key": yt_apikey,
             },
             timeout=5,
@@ -318,13 +318,10 @@ def Search(query, yt_apikey=None, append='a'):
             video_channl = video_info["snippet"]["channelTitle"]
             video_channl_id = video_info["snippet"]["channelId"]
             video_id = video_info["id"]["videoId"]
-            video_duration = str(
-                parse_duration(video_info["contentDetails"]["duration"])
-            )
             video_published = datetime.fromisoformat(
                 video_info["snippet"]["publishedAt"]
             ).strftime("%H:%M, %b %-d, %y")
-            video_subtitle = [video_channl, video_duration, video_published]
+            video_subtitle = [video_channl, video_published]
             items.append(
                 ExtensionResultItem(
                     icon=f"{IMAGES}/{video_channl_id}.png"
