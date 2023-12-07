@@ -545,7 +545,7 @@ class KeywordQueryEventListener(EventListener):
             items.append(
                 ExtensionResultItem(
                     icon="images/fetch.png",
-                    name="Update watchlist with any new videos from subscriptions",
+                    name="Fetch for new videos from subscriptions",
                     on_enter=ExtensionCustomAction("FETCH", keep_app_open=True),
                 )
             )
