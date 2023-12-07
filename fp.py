@@ -8,11 +8,15 @@ CHANNEL_URL = "https://www.youtube.com/feeds/videos.xml?channel_id="
 PLAYLIST_URL = "https://www.youtube.com/feeds/videos.xml?playlist_id="
 CONFIG = os.environ.get("HOME") + "/.config/ulauncher/com.github.oxke.ulauncher-ytwl/"
 
+# function 'function' takes int as argument and returns int
 
-def get_last_fetched():
+def get_last_fetched(tz: str = None):
     with open(CONFIG + "lastfetched_ytfp", "r+") as f:
         last_fetched = f.read()
-    return datetime.fromisoformat(last_fetched)
+    if tz is None:
+        return datetime.fromisoformat(last_fetched)
+    else:
+        return datetime.fromisoformat(last_fetched).astimezone(pytz.timezone(tz))
 
 
 def write_last_fetched():
@@ -44,6 +48,7 @@ def fetch_feed(url, channel, last_fetched):
             break
     print()
     return 0
+
 
 def fetch():
     last_fetched = get_last_fetched()
