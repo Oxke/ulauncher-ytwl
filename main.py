@@ -520,7 +520,7 @@ class KeywordQueryEventListener(EventListener):
                     )
                 )
         elif event.get_argument() and event.get_argument() == lastfetched:
-            last_fetched = fp.get_last_fetched().strftime("%b %-d, %y at %H:%M")
+            last_fetched = fp.get_last_fetched().strftime("%b %-d at %H:%M")
             items.append(
                 ExtensionResultItem(
                     icon="images/fetch.png",
