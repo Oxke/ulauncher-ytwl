@@ -390,6 +390,18 @@ class ItemEnterEventListener(EventListener):
         remove = extension.preferences["remove"]
         watch = extension.preferences["watch"]
         getqueue = extension.preferences["getqueue"]
+        if event.get_data() == "FETCH":
+            fp.fetch()
+            return RenderResultListAction(
+                    [
+                        ExtensionResultItem(
+                            icon="images/fetch_yep.png",
+                            name="Watchlist updated",
+                            description="Write 'y q' to see the watchlist",
+                            on_enter=HideWindowAction()
+                        )
+                        ]
+                    )
         if event.get_data().startswith(search):
             return Search(event.get_data()[2:],
                           extension.preferences["yt_apikey"], append)
@@ -526,7 +538,7 @@ class KeywordQueryEventListener(EventListener):
                     icon="images/fetch.png",
                     name="Watchlist was last updated on " + last_fetched,
                     description="Press enter to fetch again",
-                    on_enter=ExtensionCustomAction("FETCH"),
+                    on_enter=ExtensionCustomAction("FETCH", keep_app_open=True),
                 )
             )
         elif event.get_argument() and event.get_argument() == fetch:
@@ -534,7 +546,7 @@ class KeywordQueryEventListener(EventListener):
                 ExtensionResultItem(
                     icon="images/fetch.png",
                     name="Update watchlist with any new videos from subscriptions",
-                    on_enter=ExtensionCustomAction("FETCH"),
+                    on_enter=ExtensionCustomAction("FETCH", keep_app_open=True),
                 )
             )
         else:
