@@ -11,10 +11,10 @@ CONFIG = os.environ.get("HOME") + "/.config/ulauncher/com.github.oxke.ulauncher-
 
 # function 'function' takes int as argument and returns int
 
-def get_last_fetched(tzlocal=False):
+def get_last_fetched(local_tz=False):
     with open(CONFIG + "lastfetched_ytfp", "r+") as f:
         last_fetched = f.read()
-    if tzlocal:
+    if local_tz:
         return datetime.fromisoformat(last_fetched).astimezone(tzlocal())
     else:
         return datetime.fromisoformat(last_fetched)
