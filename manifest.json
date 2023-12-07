@@ -16,7 +16,7 @@
     },
     {
         "id": "search",
-        "type": "keyword",
+        "type": "input",
         "name": "Search for a video",
         "default_value": "s"
     },
@@ -55,6 +55,18 @@
         "type": "input",
         "name": "Get the last 10 videos of watchlist and choose to watch one of them",
         "default_value": "q"
+    },
+    {
+        "id": "lastfetched",
+        "type": "input",
+        "name": "Returns the date and time of last successful fetch",
+        "default_value": "l"
+    },
+    {
+        "id": "fetch-now",
+        "type": "input",
+        "name": "Updates the watchlist with any new videos from subscriptions",
+        "default_value": "f"
     },
     {
         "id": "yt_apikey",

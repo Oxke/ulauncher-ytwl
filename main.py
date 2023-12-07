@@ -13,6 +13,8 @@ from ulauncher.api.shared.action.RenderResultListAction import RenderResultListA
 from ulauncher.api.shared.action.HideWindowAction import HideWindowAction
 from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
 
+import fp
+
 HERE = os.path.dirname(os.path.realpath(__file__))
 CONFIG = os.environ.get("HOME") + "/.config/ulauncher/com.github.oxke.ulauncher-ytwl"
 WATCHLIST = CONFIG + "/watchlist"
@@ -418,6 +420,8 @@ class KeywordQueryEventListener(EventListener):
         remove = extension.preferences["remove"]
         watch = extension.preferences["watch"]
         getqueue = extension.preferences["getqueue"]
+        lastfetched = extension.preferences["lastfetched"]
+        fetch = extension.preferences["fetch-now"]
         if extension.preferences["yt_apikey"] == "":
             items.append(
                 ExtensionResultItem(
@@ -515,6 +519,24 @@ class KeywordQueryEventListener(EventListener):
                         on_enter=HideWindowAction(),
                     )
                 )
+        elif event.get_argument() and event.get_argument() == lastfetched:
+            last_fetched = fp.get_last_fetched().strftime("%b %-d, %y at %H:%M")
+            items.append(
+                ExtensionResultItem(
+                    icon="images/fetch.png",
+                    name="Watchlist was last updated on " + last_fetched,
+                    description="Press enter to fetch again",
+                    on_enter=ExtensionCustomAction("FETCH"),
+                )
+            )
+        elif event.get_argument() and event.get_argument() == fetch:
+            items.append(
+                ExtensionResultItem(
+                    icon="images/fetch.png",
+                    name="Update watchlist with any new videos from subscriptions",
+                    on_enter=ExtensionCustomAction("FETCH"),
+                )
+            )
         else:
             items.append(
                 ExtensionResultItem(

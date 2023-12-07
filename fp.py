@@ -45,8 +45,7 @@ def fetch_feed(url, channel, last_fetched):
     print()
     return 0
 
-
-if __name__ == "__main__":
+def fetch():
     last_fetched = get_last_fetched()
     with open(CONFIG + "subscriptions") as f:
         urls = f.readlines()
@@ -60,3 +59,6 @@ if __name__ == "__main__":
             f'{last_fetched.astimezone(pytz.timezone("Europe/Paris")).strftime("%Y-%m-%d %H:%M")} --> '
             + f'{datetime.now().strftime("%Y-%m-%d %H:%M")}\n'
         )
+
+if __name__ == "__main__":
+    fetch()
