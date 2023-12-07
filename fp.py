@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from datetime import datetime
-import pytz
+from dateutil.tz import tzlocal, UTC
+
 import feedparser
 import os
 
@@ -10,18 +11,18 @@ CONFIG = os.environ.get("HOME") + "/.config/ulauncher/com.github.oxke.ulauncher-
 
 # function 'function' takes int as argument and returns int
 
-def get_last_fetched(tz: str = None):
+def get_last_fetched(tzlocal=False):
     with open(CONFIG + "lastfetched_ytfp", "r+") as f:
         last_fetched = f.read()
-    if tz is None:
-        return datetime.fromisoformat(last_fetched)
+    if tzlocal:
+        return datetime.fromisoformat(last_fetched).astimezone(tzlocal())
     else:
-        return datetime.fromisoformat(last_fetched).astimezone(pytz.timezone(tz))
+        return datetime.fromisoformat(last_fetched)
 
 
 def write_last_fetched():
     with open(CONFIG + "lastfetched_ytfp", "w") as f:
-        f.write(datetime.now(tz=pytz.UTC).isoformat())
+        f.write(datetime.now(tz=UTC).isoformat())
 
 
 def fetch_feed(url, channel, last_fetched):
@@ -35,7 +36,7 @@ def fetch_feed(url, channel, last_fetched):
     for entry in feed.entries:
         date_published = datetime.fromisoformat(entry["published"])
         print(
-            date_published.astimezone(pytz.timezone("Europe/Paris")).strftime(
+            date_published.astimezone(tzlocal()).strftime(
                 "%b %d %H:%M"
             ),
             end=" ",
@@ -61,7 +62,7 @@ def fetch():
     else:
         write_last_fetched()
         print(
-            f'{last_fetched.astimezone(pytz.timezone("Europe/Paris")).strftime("%Y-%m-%d %H:%M")} --> '
+            f'{last_fetched.astimezone(tzlocal()).strftime("%Y-%m-%d %H:%M")} --> '
             + f'{datetime.now().strftime("%Y-%m-%d %H:%M")}\n'
         )
 
