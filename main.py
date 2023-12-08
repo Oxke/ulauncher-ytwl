@@ -179,7 +179,6 @@ def AddAllPlaylistVideosToWatchlist(playlist_id, remove, yt_apikey):
         ])
 
 
-
 def AppendToQueue(url, yt_apikey=None, remove=False):
     ytvideolink = re.compile(
         "^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|live\/|v\/|shorts\/)?)([\w\-]{11})(\S+)?$"
@@ -272,21 +271,35 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
             playlist_title = playlist_info["snippet"]["title"]
             playlist_description = playlist_info["snippet"]["description"]
             playlist_author = playlist_info["snippet"]["channelTitle"]
-
-            items = [
-                ExtensionResultItem(
-                    icon=f"images/append.png",
-                    name="ADD ALL VIDEOS FROM: " + playlist_title,
-                    description=f"{playlist_author} - {playlist_description}",
-                    on_enter=ExtensionCustomAction("ADDALL" + playlist_id)
-                ),
-                ExtensionResultItem(
-                    icon=f"images/playlist.png",
-                    name="SUBSCRIBE TO: " + playlist_title,
-                    description=f"{playlist_author} - {playlist_description}",
-                    on_enter=ExtensionCustomAction("SUBSCRIBE" + playlist_id)
-                )
-            ]
+            if remove:
+                items = [
+                    ExtensionResultItem(
+                        icon="images/remove.png",
+                        name="REMOVE ALL VIDEOS FROM: " + playlist_title,
+                        description="{playlist_author} - {playlist_description}",
+                        on_enter=ExtensionCustomAction("ADDALLr" + playlist_id)
+                    ),
+                    ExtensionResultItem(
+                        icon="images/playlist.png",
+                        name="UNSUBSCRIBE FROM: " + playlist_title,
+                        description="{playlist_author} - {playlist_description}",
+                        on_enter=ExtensionCustomAction("SUBSCRIBEr" + playlist_id)
+                    )]
+            else:
+                items = [
+                    ExtensionResultItem(
+                        icon=f"images/append.png",
+                        name="ADD ALL VIDEOS FROM: " + playlist_title,
+                        description=f"{playlist_author} - {playlist_description}",
+                        on_enter=ExtensionCustomAction("ADDALL" + playlist_id)
+                    ),
+                    ExtensionResultItem(
+                        icon=f"images/playlist.png",
+                        name="SUBSCRIBE TO: " + playlist_title,
+                        description=f"{playlist_author} - {playlist_description}",
+                        on_enter=ExtensionCustomAction("SUBSCRIBE" + playlist_id)
+                    )
+                ]
         except Exception as e:
             items = [
                 ExtensionResultItem(
