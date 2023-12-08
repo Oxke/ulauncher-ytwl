@@ -22,6 +22,7 @@ SUBSCRIPTIONS = CONFIG + "/subscriptions"
 IMAGES = CONFIG + "/images"
 yt_info = "https://www.googleapis.com/youtube/v3/videos"
 pl_info = "https://www.googleapis.com/youtube/v3/playlists"
+pl_items = "https://www.googleapis.com/youtube/v3/playlistItems"
 ch_info = "https://www.googleapis.com/youtube/v3/channels"
 yt_search = "https://www.googleapis.com/youtube/v3/search"
 yt_watch = "https://www.youtube.com/watch?v="
@@ -47,6 +48,136 @@ def WatchVideo(vid=None, stack=False, random=False):
             url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     subprocess.Popen(["mpv", url])
     return HideWindowAction()
+
+def SubscribeToPlaylist(playlist_id, remove, yt_apikey):
+    if remove:
+        action_done = (
+            "Playlist not found in subscriptions"
+            if not os.path.isfile(IMAGES + f"/{playlist_id}.png")
+            else "REMOVED: " + playlist_id
+        )
+        if action_done.startswith("R"):
+            with open(SUBSCRIPTIONS, "r+") as f:
+                lines = f.readlines()
+                if lines:
+                    lines = [
+                        line
+                        for line in lines
+                        if line.split(" | ")[0] != playlist_id
+                    ]
+                    f.seek(0)
+                    f.writelines(lines)
+                    f.truncate()
+            os.system("rm " + IMAGES + f"/{playlist_id}.png")
+        items = [
+            ExtensionResultItem(
+                icon="images/remove.png",
+                name=action_done,
+                description="bye",
+                on_enter=HideWindowAction(),
+            )
+        ]
+        return RenderResultListAction(items)
+    try:
+        playlist_info = requests.get(
+            pl_info,
+            params={
+                "id": playlist_id,
+                "part": ["snippet", "contentDetails"],
+                "key": yt_apikey,
+            },
+        )
+        assert playlist_info.status_code == 200, "Error fetching playlist"
+        playlist_info = playlist_info.json()["items"][0]
+        playlist_title = playlist_info["snippet"]["title"]
+
+        with open(SUBSCRIPTIONS, "r+") as f:
+            if playlist_id not in f.read():
+                f.write(
+                    playlist_id
+                    + " | "
+                    + playlist_title
+                    + " " * (23 - len(playlist_title))
+                    + "| \n"
+                )
+
+        playlist_description = playlist_info["snippet"]["description"]
+        thumb = playlist_info["snippet"]["thumbnails"]["medium"]["url"]
+        os.system(
+            f"wget -O {IMAGES}/{playlist_id}.jpg {thumb} && "
+            + f"convert {IMAGES}/{playlist_id}.jpg {IMAGES}/{playlist_id}.png && "
+            + f"rm {IMAGES}/{playlist_id}.jpg"
+        )
+        items = [
+            ExtensionResultItem(
+                icon=f"{IMAGES}/{playlist_id}.png",
+                name="ADDED PLAYLIST: " + playlist_title,
+                description=playlist_description,
+                on_enter=HideWindowAction(),
+            )
+        ]
+    except Exception as e:
+        items = [
+            ExtensionResultItem(
+                icon="images/error.png",
+                name="Error fetching playlist",
+                description=str(e),
+                on_enter=HideWindowAction(),
+            )
+        ]
+
+def AddAllPlaylistVideosToWatchlist(playlist_id, remove, yt_apikey):
+    try:
+        playlist_items = requests.get(
+            pl_items,
+            params={
+                "playlistId": playlist_id,
+                "part": "snippet",
+                "maxResults": 50,
+                "key": yt_apikey,
+            },
+        )
+        assert playlist_items.status_code == 200, "Error fetching playlist"
+        playlist_items = playlist_items.json()["items"]
+        video_ids = [item["snippet"]["resourceId"]["videoId"] for item in playlist_items]
+        if remove:
+            with open(WATCHLIST, "r+") as f:
+                lines = f.readlines()
+                if lines:
+                    lines = [line for line in lines if line[:-1] not in video_ids]
+                    f.seek(0)
+                    f.writelines(lines)
+                    f.truncate()
+            items = [
+                ExtensionResultItem(
+                    icon="images/remove.png",
+                    name="REMOVED all videos from " + playlist_id,
+                    description="bye",
+                    on_enter=HideWindowAction(),
+                )
+                ]
+            return RenderResultListAction(items)
+        with open(WATCHLIST, "a") as f:
+            f.writelines([video_id + "\n" for video_id in video_ids])
+        return RenderResultListAction(
+            [
+                ExtensionResultItem(
+                    icon="images/append.png",
+                    name="ADDED all videos from " + playlist_id,
+                    description="Enter to start watching them",
+                    on_enter=ExtensionCustomAction("q"+video_ids[0]))
+            ]
+        )
+    except Exception as e:
+        return RenderResultListAction([
+            ExtensionResultItem(
+                icon="images/error.png",
+                name="Error fetching playlist",
+                description=str(e),
+                on_enter=HideWindowAction(),
+            )
+        ])
+
 
 
 def AppendToQueue(url, yt_apikey=None, remove=False):
@@ -127,34 +258,6 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
 
     elif m_playlist:
         playlist_id = url
-        if remove:
-            action_done = (
-                "Playlist not found in subscriptions"
-                if not os.path.isfile(IMAGES + f"/{playlist_id}.png")
-                else "REMOVED: " + playlist_id
-            )
-            if action_done.startswith("R"):
-                with open(SUBSCRIPTIONS, "r+") as f:
-                    lines = f.readlines()
-                    if lines:
-                        lines = [
-                            line
-                            for line in lines
-                            if line.split(" | ")[0] != playlist_id
-                        ]
-                        f.seek(0)
-                        f.writelines(lines)
-                        f.truncate()
-                os.system("rm " + IMAGES + f"/{playlist_id}.png")
-            items = [
-                ExtensionResultItem(
-                    icon="images/remove.png",
-                    name=action_done,
-                    description="bye",
-                    on_enter=HideWindowAction(),
-                )
-            ]
-            return RenderResultListAction(items)
         try:
             playlist_info = requests.get(
                 pl_info,
@@ -167,37 +270,28 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
             assert playlist_info.status_code == 200, "Error fetching playlist"
             playlist_info = playlist_info.json()["items"][0]
             playlist_title = playlist_info["snippet"]["title"]
-
-            with open(SUBSCRIPTIONS, "r+") as f:
-                if playlist_id not in f.read():
-                    f.write(
-                        playlist_id
-                        + " | "
-                        + playlist_title
-                        + " " * (23 - len(playlist_title))
-                        + "| \n"
-                    )
-
             playlist_description = playlist_info["snippet"]["description"]
-            thumb = playlist_info["snippet"]["thumbnails"]["medium"]["url"]
-            os.system(
-                f"wget -O {IMAGES}/{playlist_id}.jpg {thumb} && "
-                + f"convert {IMAGES}/{playlist_id}.jpg {IMAGES}/{playlist_id}.png && "
-                + f"rm {IMAGES}/{playlist_id}.jpg"
-            )
+            playlist_author = playlist_info["snippet"]["channelTitle"]
+
             items = [
                 ExtensionResultItem(
-                    icon=f"{IMAGES}/{playlist_id}.png",
-                    name="ADDED PLAYLIST: " + playlist_title,
-                    description=playlist_description,
-                    on_enter=HideWindowAction(),
+                    icon=f"images/append.png",
+                    name="ADD ALL VIDEOS FROM: " + playlist_title,
+                    description=f"{playlist_author} - {playlist_description}",
+                    on_enter=ExtensionCustomAction("ADDALL" + playlist_id)
+                ),
+                ExtensionResultItem(
+                    icon=f"images/playlist.png",
+                    name="SUBSCRIBE TO: " + playlist_title,
+                    description=f"{playlist_author} - {playlist_description}",
+                    on_enter=ExtensionCustomAction("SUBSCRIBE" + playlist_id)
                 )
             ]
         except Exception as e:
             items = [
                 ExtensionResultItem(
                     icon="images/error.png",
-                    name="Error fetching playlist",
+                    name="Error retrieving playlist",
                     description=str(e),
                     on_enter=HideWindowAction(),
                 )
@@ -335,7 +429,7 @@ def Search(query, yt_apikey=None, append='a'):
                     ExtensionResultItem(
                         icon="images/playlist.png",
                         name=title,
-                        description="Enter to subscribe to playlist",
+                        description="Playlist: enter to subscribe to subscribe or add all of its videos to watchlist",
                         on_enter=ExtensionCustomAction(f"{append} {result['id']['playlistId']}", keep_app_open=True)
                     )
                 )
@@ -385,6 +479,16 @@ class YTLWExtension(Extension):
 
 class ItemEnterEventListener(EventListener):
     def on_event(self, event, extension):
+        if event.get_data().startswith("SUBSCRIBE"):
+            playlist_id = event.get_data()[9:] if event.get_data()[9]=='P' else event.get_data()[10:]
+            return SubscribeToPlaylist(playlist_id, remove=event.get_data()[9]=='r', yt_apikey=extension.preferences["yt_apikey"])
+        if event.get_data().startswith("ADDALL"):
+            playlist_id = event.get_data()[6:] if event.get_data()[6]=='P' else event.get_data()[7:]
+            return AddAllPlaylistVideosToWatchlist(playlist_id,
+                                                   event.get_data()[6]=='r',
+                                                   yt_apikey=extension.preferences["yt_apikey"])
+
+
         search = extension.preferences["search"]
         append = extension.preferences["append"]
         remove = extension.preferences["remove"]
