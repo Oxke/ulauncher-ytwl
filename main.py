@@ -277,13 +277,15 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
                         icon="images/remove.png",
                         name="REMOVE ALL VIDEOS FROM: " + playlist_title,
                         description="{playlist_author} - {playlist_description}",
-                        on_enter=ExtensionCustomAction("ADDALLr" + playlist_id)
+                        on_enter=ExtensionCustomAction("ADDALLr" + playlist_id,
+                                                       keep_app_open=True)
                     ),
                     ExtensionResultItem(
                         icon="images/playlist.png",
                         name="UNSUBSCRIBE FROM: " + playlist_title,
                         description="{playlist_author} - {playlist_description}",
-                        on_enter=ExtensionCustomAction("SUBSCRIBEr" + playlist_id)
+                        on_enter=ExtensionCustomAction("SUBSCRIBEr" +
+                                                       playlist_id, keep_app_open=True)
                     )]
             else:
                 items = [
@@ -291,13 +293,16 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
                         icon=f"images/append.png",
                         name="ADD ALL VIDEOS FROM: " + playlist_title,
                         description=f"{playlist_author} - {playlist_description}",
-                        on_enter=ExtensionCustomAction("ADDALL" + playlist_id)
+                        on_enter=ExtensionCustomAction("ADDALL" + playlist_id,
+                                                       keep_app_open=True)
                     ),
                     ExtensionResultItem(
                         icon=f"images/playlist.png",
                         name="SUBSCRIBE TO: " + playlist_title,
                         description=f"{playlist_author} - {playlist_description}",
-                        on_enter=ExtensionCustomAction("SUBSCRIBE" + playlist_id)
+                        on_enter=ExtensionCustomAction("SUBSCRIBE" +
+                                                       playlist_id,
+                                                       keep_app_open=True)
                     )
                 ]
         except Exception as e:
