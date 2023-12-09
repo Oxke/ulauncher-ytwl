@@ -20,6 +20,7 @@ CONFIG = os.environ.get("HOME") + "/.config/ulauncher/com.github.oxke.ulauncher-
 WATCHLIST = CONFIG + "/watchlist"
 SUBSCRIPTIONS = CONFIG + "/subscriptions"
 IMAGES = CONFIG + "/images"
+
 yt_info = "https://www.googleapis.com/youtube/v3/videos"
 pl_info = "https://www.googleapis.com/youtube/v3/playlists"
 pl_items = "https://www.googleapis.com/youtube/v3/playlistItems"
@@ -177,7 +178,6 @@ def AddAllPlaylistVideosToWatchlist(playlist_id, remove, yt_apikey):
                 on_enter=HideWindowAction(),
             )
         ])
-
 
 def AppendToQueue(url, yt_apikey=None, remove=False):
     ytvideolink = re.compile(
@@ -413,7 +413,6 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
         ]
     return RenderResultListAction(items)
 
-
 def Search(query, yt_apikey=None, append='a'):
     try:
         search_results = requests.get(
@@ -507,23 +506,23 @@ class ItemEnterEventListener(EventListener):
                                                    yt_apikey=extension.preferences["yt_apikey"])
 
 
-        search = extension.preferences["search"]
-        append = extension.preferences["append"]
-        remove = extension.preferences["remove"]
-        watch = extension.preferences["watch"]
-        getqueue = extension.preferences["getqueue"]
         if event.get_data() == "FETCH":
-            fp.fetch()
+            num_new_videos = fp.fetch()
             return RenderResultListAction(
                     [
                         ExtensionResultItem(
                             icon="images/fetch_yep.png",
-                            name="Watchlist updated",
+                            name="No new videos" if num_new_videos == 0 else "Added one new video" if num_new_videos == 1 else f"Added {num_new_videos} new videos",
                             description="Write 'y q' to see the watchlist",
                             on_enter=HideWindowAction()
                         )
                         ]
                     )
+        search = extension.preferences["search"]
+        append = extension.preferences["append"]
+        remove = extension.preferences["remove"]
+        watch = extension.preferences["watch"]
+        getqueue = extension.preferences["getqueue"]
         if event.get_data().startswith(search):
             return Search(event.get_data()[2:],
                           extension.preferences["yt_apikey"], append)

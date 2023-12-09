@@ -26,13 +26,14 @@ def write_last_fetched():
 
 
 def fetch_feed(url, channel, last_fetched):
+    count = 0
     if url.startswith("PL"):
         feed = feedparser.parse(PLAYLIST_URL + url)
     elif url.startswith("UC"):
         feed = feedparser.parse(CHANNEL_URL + url)
     if feed.status != 200:
         print(f"ERROR: {feed.status}")
-        return 1
+        return 1, 0
     for entry in feed.entries:
         date_published = datetime.fromisoformat(entry["published"])
         print(
@@ -45,20 +46,23 @@ def fetch_feed(url, channel, last_fetched):
             with open(CONFIG + "watchlist", "a") as f:
                 f.write(entry["yt_videoid"] + "\n")
             print("NEW VIDEO!", end=" ")
+            count += 1
         else:
             break
     print()
-    return 0
+    return 0, count
 
 
 def fetch():
     last_fetched = get_last_fetched()
+    count = 0
     with open(CONFIG + "subscriptions") as f:
         urls = f.readlines()
     for i, url in enumerate(urls):
         print(f'Fetching {i+1:02}/{len(urls)}: {url.split(" | ")[1].strip()}', end=" ")
-        if fetch_feed(*url.split(" | "), last_fetched):
-            break
+        ff = fetch_feed(*url.split(" | "), last_fetched)
+        if ff[0]: break
+        count += ff[1]
     else:
         write_last_fetched()
         print(
