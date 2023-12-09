@@ -69,6 +69,7 @@ def fetch():
             f'{last_fetched.astimezone(tzlocal()).strftime("%Y-%m-%d %H:%M")} --> '
             + f'{datetime.now().strftime("%Y-%m-%d %H:%M")}\n'
         )
+    return count
 
 if __name__ == "__main__":
     fetch()
