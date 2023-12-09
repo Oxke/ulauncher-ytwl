@@ -11,6 +11,7 @@ CONFIG = os.environ.get("HOME") + "/.config/ulauncher/com.github.oxke.ulauncher-
 
 # function 'function' takes int as argument and returns int
 
+
 def get_last_fetched(local_tz=False):
     with open(CONFIG + "lastfetched_ytfp", "r+") as f:
         last_fetched = f.read()
@@ -37,9 +38,7 @@ def fetch_feed(url, channel, last_fetched):
     for entry in feed.entries:
         date_published = datetime.fromisoformat(entry["published"])
         print(
-            date_published.astimezone(tzlocal()).strftime(
-                "%b %d %H:%M"
-            ),
+            date_published.astimezone(tzlocal()).strftime("%b %d %H:%M"),
             end=" ",
         )
         if date_published > last_fetched:
@@ -61,7 +60,8 @@ def fetch():
     for i, url in enumerate(urls):
         print(f'Fetching {i+1:02}/{len(urls)}: {url.split(" | ")[1].strip()}', end=" ")
         ff = fetch_feed(*url.split(" | "), last_fetched)
-        if ff[0]: break
+        if ff[0]:
+            break
         count += ff[1]
     else:
         write_last_fetched()
@@ -70,6 +70,7 @@ def fetch():
             + f'{datetime.now().strftime("%Y-%m-%d %H:%M")}\n'
         )
     return count
+
 
 if __name__ == "__main__":
     fetch()

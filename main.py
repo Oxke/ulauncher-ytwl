@@ -50,6 +50,7 @@ def WatchVideo(vid=None, stack=False, random=False):
     subprocess.Popen(["mpv", url])
     return HideWindowAction()
 
+
 def SubscribeToPlaylist(playlist_id, remove, yt_apikey):
     if remove:
         action_done = (
@@ -62,9 +63,7 @@ def SubscribeToPlaylist(playlist_id, remove, yt_apikey):
                 lines = f.readlines()
                 if lines:
                     lines = [
-                        line
-                        for line in lines
-                        if line.split(" | ")[0] != playlist_id
+                        line for line in lines if line.split(" | ")[0] != playlist_id
                     ]
                     f.seek(0)
                     f.writelines(lines)
@@ -127,6 +126,7 @@ def SubscribeToPlaylist(playlist_id, remove, yt_apikey):
             )
         ]
 
+
 def AddAllPlaylistVideosToWatchlist(playlist_id, remove, yt_apikey):
     try:
         playlist_items = requests.get(
@@ -140,7 +140,9 @@ def AddAllPlaylistVideosToWatchlist(playlist_id, remove, yt_apikey):
         )
         assert playlist_items.status_code == 200, "Error fetching playlist"
         playlist_items = playlist_items.json()["items"]
-        video_ids = [item["snippet"]["resourceId"]["videoId"] for item in playlist_items]
+        video_ids = [
+            item["snippet"]["resourceId"]["videoId"] for item in playlist_items
+        ]
         if remove:
             with open(WATCHLIST, "r+") as f:
                 lines = f.readlines()
@@ -156,7 +158,7 @@ def AddAllPlaylistVideosToWatchlist(playlist_id, remove, yt_apikey):
                     description="bye",
                     on_enter=HideWindowAction(),
                 )
-                ]
+            ]
             return RenderResultListAction(items)
         with open(WATCHLIST, "a") as f:
             f.writelines([video_id + "\n" for video_id in video_ids])
@@ -166,18 +168,22 @@ def AddAllPlaylistVideosToWatchlist(playlist_id, remove, yt_apikey):
                     icon="images/append.png",
                     name="ADDED all videos from " + playlist_id,
                     description="Enter to start watching them",
-                    on_enter=ExtensionCustomAction("q"+video_ids[0]))
+                    on_enter=ExtensionCustomAction("q" + video_ids[0]),
+                )
             ]
         )
     except Exception as e:
-        return RenderResultListAction([
-            ExtensionResultItem(
-                icon="images/error.png",
-                name="Error fetching playlist",
-                description=str(e),
-                on_enter=HideWindowAction(),
-            )
-        ])
+        return RenderResultListAction(
+            [
+                ExtensionResultItem(
+                    icon="images/error.png",
+                    name="Error fetching playlist",
+                    description=str(e),
+                    on_enter=HideWindowAction(),
+                )
+            ]
+        )
+
 
 def AppendToQueue(url, yt_apikey=None, remove=False):
     ytvideolink = re.compile(
@@ -277,33 +283,37 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
                         icon="images/remove.png",
                         name="REMOVE ALL VIDEOS FROM: " + playlist_title,
                         description="{playlist_author} - {playlist_description}",
-                        on_enter=ExtensionCustomAction("ADDALLr" + playlist_id,
-                                                       keep_app_open=True)
+                        on_enter=ExtensionCustomAction(
+                            "ADDALLr" + playlist_id, keep_app_open=True
+                        ),
                     ),
                     ExtensionResultItem(
                         icon="images/playlist.png",
                         name="UNSUBSCRIBE FROM: " + playlist_title,
                         description="{playlist_author} - {playlist_description}",
-                        on_enter=ExtensionCustomAction("SUBSCRIBEr" +
-                                                       playlist_id, keep_app_open=True)
-                    )]
+                        on_enter=ExtensionCustomAction(
+                            "SUBSCRIBEr" + playlist_id, keep_app_open=True
+                        ),
+                    ),
+                ]
             else:
                 items = [
                     ExtensionResultItem(
                         icon=f"images/append.png",
                         name="ADD ALL VIDEOS FROM: " + playlist_title,
                         description=f"{playlist_author} - {playlist_description}",
-                        on_enter=ExtensionCustomAction("ADDALL" + playlist_id,
-                                                       keep_app_open=True)
+                        on_enter=ExtensionCustomAction(
+                            "ADDALL" + playlist_id, keep_app_open=True
+                        ),
                     ),
                     ExtensionResultItem(
                         icon=f"images/playlist.png",
                         name="SUBSCRIBE TO: " + playlist_title,
                         description=f"{playlist_author} - {playlist_description}",
-                        on_enter=ExtensionCustomAction("SUBSCRIBE" +
-                                                       playlist_id,
-                                                       keep_app_open=True)
-                    )
+                        on_enter=ExtensionCustomAction(
+                            "SUBSCRIBE" + playlist_id, keep_app_open=True
+                        ),
+                    ),
                 ]
         except Exception as e:
             items = [
@@ -413,7 +423,8 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
         ]
     return RenderResultListAction(items)
 
-def Search(query, yt_apikey=None, append='a'):
+
+def Search(query, yt_apikey=None, append="a"):
     try:
         search_results = requests.get(
             yt_search,
@@ -423,7 +434,9 @@ def Search(query, yt_apikey=None, append='a'):
                 "key": yt_apikey,
             },
         )
-        assert search_results.status_code == 200, f"Error code {search_results.status_code}"
+        assert (
+            search_results.status_code == 200
+        ), f"Error code {search_results.status_code}"
         search_results = search_results.json()["items"]
         items = []
         for result in search_results:
@@ -437,17 +450,21 @@ def Search(query, yt_apikey=None, append='a'):
                         icon="images/channel.png",
                         name=title,
                         description="Enter to subscribe to channel",
-                        on_enter=ExtensionCustomAction(f"{append} https://www.youtube.com/channel/{channl_id}", keep_app_open=True)
-
-                        )
+                        on_enter=ExtensionCustomAction(
+                            f"{append} https://www.youtube.com/channel/{channl_id}",
+                            keep_app_open=True,
+                        ),
                     )
+                )
             elif kind == "playlist":
                 items.append(
                     ExtensionResultItem(
                         icon="images/playlist.png",
                         name=title,
                         description="Playlist: enter to subscribe to subscribe or add all of its videos to watchlist",
-                        on_enter=ExtensionCustomAction(f"{append} {result['id']['playlistId']}", keep_app_open=True)
+                        on_enter=ExtensionCustomAction(
+                            f"{append} {result['id']['playlistId']}", keep_app_open=True
+                        ),
                     )
                 )
             elif kind == "video":
@@ -463,7 +480,9 @@ def Search(query, yt_apikey=None, append='a'):
                         else "images/icon.png",
                         name=title,
                         description=" - ".join(video_subtitle),
-                        on_enter=ExtensionCustomAction(f"{append} {yt_watch}{video_id}", keep_app_open=True)
+                        on_enter=ExtensionCustomAction(
+                            f"{append} {yt_watch}{video_id}", keep_app_open=True
+                        ),
                     )
                 )
             else:
@@ -497,35 +516,53 @@ class YTLWExtension(Extension):
 class ItemEnterEventListener(EventListener):
     def on_event(self, event, extension):
         if event.get_data().startswith("SUBSCRIBE"):
-            playlist_id = event.get_data()[9:] if event.get_data()[9]=='P' else event.get_data()[10:]
-            return SubscribeToPlaylist(playlist_id, remove=event.get_data()[9]=='r', yt_apikey=extension.preferences["yt_apikey"])
+            playlist_id = (
+                event.get_data()[9:]
+                if event.get_data()[9] == "P"
+                else event.get_data()[10:]
+            )
+            return SubscribeToPlaylist(
+                playlist_id,
+                remove=event.get_data()[9] == "r",
+                yt_apikey=extension.preferences["yt_apikey"],
+            )
         if event.get_data().startswith("ADDALL"):
-            playlist_id = event.get_data()[6:] if event.get_data()[6]=='P' else event.get_data()[7:]
-            return AddAllPlaylistVideosToWatchlist(playlist_id,
-                                                   event.get_data()[6]=='r',
-                                                   yt_apikey=extension.preferences["yt_apikey"])
-
+            playlist_id = (
+                event.get_data()[6:]
+                if event.get_data()[6] == "P"
+                else event.get_data()[7:]
+            )
+            return AddAllPlaylistVideosToWatchlist(
+                playlist_id,
+                event.get_data()[6] == "r",
+                yt_apikey=extension.preferences["yt_apikey"],
+            )
 
         if event.get_data() == "FETCH":
             num_new_videos = fp.fetch()
             return RenderResultListAction(
-                    [
-                        ExtensionResultItem(
-                            icon="images/fetch_yep.png",
-                            name="No new videos" if num_new_videos == 0 else "Added one new video" if num_new_videos == 1 else f"Added {num_new_videos} new videos",
-                            description="Write 'y q' to see the watchlist",
-                            on_enter=HideWindowAction()
-                        )
-                        ]
+                [
+                    ExtensionResultItem(
+                        icon="images/fetch_yep.png",
+                        name="No new videos"
+                        if num_new_videos == 0
+                        else "Added one new video"
+                        if num_new_videos == 1
+                        else f"Added {num_new_videos} new videos",
+                        description="Write 'y q' to see the watchlist",
+                        on_enter=HideWindowAction(),
                     )
+                ]
+            )
         search = extension.preferences["search"]
         append = extension.preferences["append"]
         remove = extension.preferences["remove"]
         watch = extension.preferences["watch"]
         getqueue = extension.preferences["getqueue"]
         if event.get_data().startswith(search):
-            return Search(event.get_data()[2:],
-                          extension.preferences["yt_apikey"], append)
+            return Search(
+                event.get_data()[2:], extension.preferences["yt_apikey"], append
+            )
         if event.get_data() == watch:
             wm = extension.preferences["watchlist-mode"]
             return (
@@ -571,10 +608,11 @@ class KeywordQueryEventListener(EventListener):
                     icon="images/search.png",
                     name="Search " + event.get_argument()[2:],
                     description="Press enter to search for videos",
-                    on_enter=ExtensionCustomAction(event.get_argument(),
-                                                   keep_app_open=True)
+                    on_enter=ExtensionCustomAction(
+                        event.get_argument(), keep_app_open=True
+                    ),
                 )
-                )
+            )
         elif event.get_argument() and event.get_argument().startswith(append):
             items.append(
                 ExtensionResultItem(
@@ -653,7 +691,9 @@ class KeywordQueryEventListener(EventListener):
                     )
                 )
         elif event.get_argument() and event.get_argument() == lastfetched:
-            last_fetched = fp.get_last_fetched(local_tz=True).strftime("%b %-d at %H:%M")
+            last_fetched = fp.get_last_fetched(local_tz=True).strftime(
+                "%b %-d at %H:%M"
+            )
             items.append(
                 ExtensionResultItem(
                     icon="images/fetch.png",
