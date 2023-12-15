@@ -25,7 +25,7 @@
         "type": "input",
         "name": "Add new video to watchlist or subscribe to new channel or playlist",
         "default_value": "a",
-        "description": "To add a playlist write after a the playlist id, otherwise send the url for adding a video or subscribing to a channel"
+        "description": "To add a playlist write after this keyword the playlist id, otherwise send the url for adding a video or subscribing to a channel"
     },
     {
         "id": "remove",

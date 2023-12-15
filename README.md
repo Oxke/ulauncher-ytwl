@@ -5,7 +5,7 @@ Simple ulauncher extension for having a youtube watchlist that updates at each n
 ![2023-12-01\_01-29](https://github.com/Oxke/ulauncher-ytwl/assets/40807290/68f126bf-f83e-4893-b2a1-b67d8fca4157)
 
 ## Features
-- **new** Lets you add all videos from watchlist (even from search results)
+- Lets you add to watchlist all videos in a playlist (even from search results)
 - Lets you search on youtube for videos
 - Stores a watchlist of youtube videos
 - Subscribes to channels and automatically adds new videos to the watchlist
