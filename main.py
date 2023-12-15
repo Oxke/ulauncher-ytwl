@@ -383,7 +383,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
                         + "           | "
                         + channel_title
                         + " " * (23 - len(channel_title))
-                        + "| \n"
+                        + "|\n"
                     )
 
             channel_description = channel_info["snippet"]["description"]
