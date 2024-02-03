@@ -21,3 +21,10 @@ Simple ulauncher extension for having a youtube watchlist that updates at each n
     ```bash
     sudo bash ~/.local/share/ulauncher/extensions/com.github.oxke.ulauncher-ytwl/setup
     ```
+
+## Instructions (keys can be modified)
+- `y s {search}` to search for YouTube videos or channels
+- `y a {video / channel}` to subscribe to a new channel or append a new video the the watchlist (insert a link)
+- `y a {playlist ID}` to subscribe or add all videos from a playlist (insert the playlist ID)
+- `y w` to watch the next video
+- `y q` to get the whole list
