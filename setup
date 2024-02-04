@@ -1,5 +1,10 @@
 here=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 user=$(whoami)
+sysconfig=/home/$user/.config/systemd/
+if [ ! -d "$sysconfig/user" ]; then
+  if [ ! -d "$sysconfig" ]; then
+    mkdir $sysconfig
+  mkdir $sysconfig/user
 config=/home/$user/.config/ulauncher/com.github.oxke.ulauncher-ytwl
 
 echo "sh -c \"/usr/bin/python $here/fp.py >> $config/fp.log\"" >> $here/ytfp.sh
@@ -13,4 +18,4 @@ touch $config/watchlist
 touch $config/fp.log
 mv $here/lastfetched_ytfp $config/lastfetched_ytfp
 
-pip install $here/requirements.txt --user
+pip install -r $here/requirements.txt --user
