@@ -1,7 +1,7 @@
 here=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 user=$(whoami)
 
-sysconfig=/home/$user/.config/systemd/
+sysconfig=/home/$user/.config/systemd
 if [ ! -d "$sysconfig/user" ]; then
   if [ ! -d "$sysconfig" ]; then
     mkdir $sysconfig
