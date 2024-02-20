@@ -1,4 +1,18 @@
-import re import os import subprocess import requests from random import randint from datetime import datetime from isodate import parse_duration from ulauncher.api.client.Extension import Extension from ulauncher.api.client.EventListener import EventListener from ulauncher.api.shared.event import KeywordQueryEvent, ItemEnterEvent from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction from ulauncher.api.shared.action.HideWindowAction import HideWindowAction from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction import fp
+import re
+import os
+import subprocess
+import requests
+from random import randint
+from datetime import datetime
+from isodate import parse_duration
+from ulauncher.api.client.Extension import Extension
+from ulauncher.api.client.EventListener import EventListener
+from ulauncher.api.shared.event import KeywordQueryEvent, ItemEnterEvent
+from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
+from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
+from ulauncher.api.shared.action.HideWindowAction import HideWindowAction
+from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
+import fp
 
 HERE = os.path.dirname(os.path.realpath(__file__))
 CONFIG = os.environ.get("HOME") + "/.config/ulauncher/com.github.oxke.ulauncher-ytwl"
