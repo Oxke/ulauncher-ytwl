@@ -499,7 +499,7 @@ def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
                     )
                 items.append(
                     ExtensionResultItem(
-                        icon= f"{IMAGES}/{video_id}.jpg}"
+                        icon= f"{IMAGES}/{video_id}.jpg"
                         if os.path.isfile(f"{IMAGES}/{video_id}.jpg")
                         else f"{IMAGES}/{channl_id}.png"
                         if os.path.isfile(f"{IMAGES}/{channl_id}.png")
