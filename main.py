@@ -2,7 +2,6 @@ import re
 import os
 import subprocess
 import requests
-from urllib.request import urlretrieve as wget
 from random import randint
 from datetime import datetime
 from isodate import parse_duration
@@ -105,7 +104,7 @@ def SubscribeToPlaylist(playlist_id, remove, yt_apikey):
         playlist_description = playlist_info["snippet"]["description"]
         thumb = playlist_info["snippet"]["thumbnails"]["medium"]["url"]
         os.system(
-            f"wget -O {IMAGES}/{playlist_id}.jpg {thumb} && "
+            f"wget -q -O {IMAGES}/{playlist_id}.jpg {thumb} && "
             + f"convert {IMAGES}/{playlist_id}.jpg {IMAGES}/{playlist_id}.png && "
             + f"rm {IMAGES}/{playlist_id}.jpg"
         )
@@ -390,7 +389,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
             channel_description = channel_info["snippet"]["description"]
             thumb = channel_info["snippet"]["thumbnails"]["medium"]["url"]
             os.system(
-                f"wget -O {IMAGES}/{channel_id}.jpg {thumb} && "
+                f"wget -q -O {IMAGES}/{channel_id}.jpg {thumb} && "
                 + f"convert {IMAGES}/{channel_id}.jpg {IMAGES}/{channel_id}.png && "
                 + f"rm {IMAGES}/{channel_id}.jpg"
             )
@@ -449,7 +448,7 @@ def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
             if kind == "channel":
                 if thumbnail:
                     os.system(
-                        f"wget -O {IMAGES}/{channl_id}.jpg {thumb} && "
+                        f"wget -q -O {IMAGES}/{channl_id}.jpg {thumb} && "
                         + f"convert {IMAGES}/{channl_id}.jpg {IMAGES}/{channl_id}.png && "
                         + f"rm {IMAGES}/{channl_id}.jpg"
                     )
@@ -470,7 +469,7 @@ def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
                 playlist_id = result["id"]["playlistId"]
                 if thumbnail:
                     os.system(
-                        f"wget -O {IMAGES}/{playlist_id}.jpg {thumb} && "
+                        f"wget -q -O {IMAGES}/{playlist_id}.jpg {thumb} && "
                         + f"convert {IMAGES}/{playlist_id}.jpg {IMAGES}/{playlist_id}.png && "
                         + f"rm {IMAGES}/{playlist_id}.jpg"
                     )
@@ -495,11 +494,10 @@ def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
                 if thumbnail:
                     video_thumbnail = result["snippet"]["thumbnails"]["medium"]["url"]
                     os.system(
-                        f"wget -O {IMAGES}/{video_id}.jpg {video_thumbnail} >/dev/null & "
+                        f"wget -q -O {IMAGES}/{video_id}.jpg {video_thumbnail} >/dev/null & "
                         + f"convert {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 256x256 {IMAGES}/{video_id}.png && "
                         + f"rm {IMAGES}/{video_id}.jpg"
                     )
-                    # wget(video_thumbnail, f"IMAGES/{video_id}.png")
                 items.append(
                     ExtensionResultItem(
                         icon= f"{IMAGES}/{video_id}.png"
@@ -706,11 +704,10 @@ class KeywordQueryEventListener(EventListener):
                     if thumbnail:
                         video_thumbnail = video_info["snippet"]["thumbnails"]["medium"]["url"]
                         os.system(
-                            f"wget -O {IMAGES}/{video_id}.jpg {video_thumbnail} > /dev/null & "
+                            f"wget -q -O {IMAGES}/{video_id}.jpg {video_thumbnail} > /dev/null & "
                             + f"convert {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 256x256 {IMAGES}/{video_id}.png && "
                             + f"rm {IMAGES}/{video_id}.jpg"
                         )
-                        # wget(video_thumbnail, f"IMAGES/{video_id}.png")
                     items.append(
                         ExtensionResultItem(
                             icon= f"{IMAGES}/{video_id}.png"
