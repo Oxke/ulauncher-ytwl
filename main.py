@@ -2,6 +2,7 @@ import re
 import os
 import subprocess
 import requests
+from urllib.requess import urlretrieve as wget
 from random import randint
 from datetime import datetime
 from isodate import parse_duration
@@ -491,15 +492,11 @@ def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
                 ).strftime("%H:%M, %b %-d, %y")
                 video_subtitle = [channl, video_published]
                 if thumbnail:
-                    os.system(
-                        f"wget -O {IMAGES}/{video_id}.jpg {thumb} > /dev/null && "
-                        + f"convert {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 128x128 {IMAGES}/{video_id}.png && "
-                        + f"rm {IMAGES}/{video_id}.jpg"
-                    )
+                    wget(thumb, IMAGES)
                 items.append(
                     ExtensionResultItem(
-                        icon= f"{IMAGES}/{video_id}.jpg"
-                        if os.path.isfile(f"{IMAGES}/{video_id}.jpg")
+                        icon= f"{IMAGES}/{video_id}.png"
+                        if os.path.isfile(f"{IMAGES}/{video_id}.png")
                         else f"{IMAGES}/{channl_id}.png"
                         if os.path.isfile(f"{IMAGES}/{channl_id}.png")
                         else "images/icon.png",
@@ -699,15 +696,16 @@ class KeywordQueryEventListener(EventListener):
                     video_subtitle = [video_channl, video_duration, video_published]
                     if thumbnail:
                         video_thumbnail = video_info["snippet"]["thumbnails"]["medium"]["url"]
-                        os.system(
-                            f"wget -O {IMAGES}/{video_id}.jpg {video_thumbnail} > /dev/null & "
-                            + f"convert {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 128x128 {IMAGES}/{video_id}.png && "
-                            + f"rm {IMAGES}/{video_id}.jpg"
-                        )
+                        # os.system(
+                        #     f"wget -O {IMAGES}/{video_id}.jpg {video_thumbnail} > /dev/null & "
+                        #     + f"convert {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 128x128 {IMAGES}/{video_id}.png && "
+                        #     + f"rm {IMAGES}/{video_id}.jpg"
+                        # )
+                        wget(video_thumbnail, IMAGES)
                     items.append(
                         ExtensionResultItem(
-                            icon= f"{IMAGES}/{video_id}.jpg"
-                            if os.path.isfile(f"{IMAGES}/{video_id}.jpg")
+                            icon= f"{IMAGES}/{video_id}.png"
+                            if os.path.isfile(f"{IMAGES}/{video_id}.png")
                             else f"{IMAGES}/{video_channl_id}.png"
                             if os.path.isfile(f"{IMAGES}/{video_channl_id}.png")
                             else "images/icon.png",
