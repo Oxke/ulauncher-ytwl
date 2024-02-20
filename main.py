@@ -492,7 +492,8 @@ def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
                 ).strftime("%H:%M, %b %-d, %y")
                 video_subtitle = [channl, video_published]
                 if thumbnail:
-                    wget(thumb, IMAGES)
+                    video_thumbnail = result["snippet"]["thumbnails"]["medium"]["url"]
+                    wget(video_thumbnail, f"IMAGES/{video_id}.png")
                 items.append(
                     ExtensionResultItem(
                         icon= f"{IMAGES}/{video_id}.png"
@@ -701,7 +702,7 @@ class KeywordQueryEventListener(EventListener):
                         #     + f"convert {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 128x128 {IMAGES}/{video_id}.png && "
                         #     + f"rm {IMAGES}/{video_id}.jpg"
                         # )
-                        wget(video_thumbnail, IMAGES)
+                        wget(video_thumbnail, f"IMAGES/{video_id}.png")
                     items.append(
                         ExtensionResultItem(
                             icon= f"{IMAGES}/{video_id}.png"
