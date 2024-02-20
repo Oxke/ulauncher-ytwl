@@ -492,8 +492,8 @@ def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
                 video_subtitle = [channl, video_published]
                 if thumbnail:
                     os.system(
-                        f"wget -O {IMAGES}/{video_id}.jpg {thumb} && "
-                        + f"convert {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 256x256 {IMAGES}/{video_id}.png && "
+                        f"wget -O {IMAGES}/{video_id}.jpg {thumb} > /dev/null && "
+                        + f"convert {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 128x128 {IMAGES}/{video_id}.png && "
                         + f"rm {IMAGES}/{video_id}.jpg"
                     )
                 items.append(
@@ -529,7 +529,6 @@ def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
             )
         ]
     return RenderResultListAction(items)
-
 
 class YTLWExtension(Extension):
     def __init__(self):
@@ -701,8 +700,8 @@ class KeywordQueryEventListener(EventListener):
                     if thumbnail:
                         video_thumbnail = video_info["snippet"]["thumbnails"]["medium"]["url"]
                         os.system(
-                            f"wget -O {IMAGES}/{video_id}.jpg {video_thumbnail} && "
-                            + f"convert {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 256x256 {IMAGES}/{video_id}.png && "
+                            f"wget -O {IMAGES}/{video_id}.jpg {video_thumbnail} > /dev/null & "
+                            + f"convert {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 128x128 {IMAGES}/{video_id}.png && "
                             + f"rm {IMAGES}/{video_id}.jpg"
                         )
                     items.append(

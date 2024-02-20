@@ -1,0 +1,12 @@
+--2024-02-20 11:58:07--  https://i.ytimg.com/vi/sDdC3-LT7pM/mqdefault.jpg
+Loaded CA certificate '/etc/ssl/certs/ca-certificates.crt'
+Resolving i.ytimg.com (i.ytimg.com)... 142.250.180.182, 216.58.204.150, 216.58.205.54, ...
+Connecting to i.ytimg.com (i.ytimg.com)|142.250.180.182|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 12650 (12K) [image/jpeg]
+Saving to: ‘/home/oxke/.config/ulauncher/com.github.oxke.ulauncher-ytwl/images/sDdC3-LT7pM.jpg’
+
+     0K .......... ..                                         100% 2.29M=0.005s
+
+2024-02-20 11:58:07 (2.29 MB/s) - ‘/home/oxke/.config/ulauncher/com.github.oxke.ulauncher-ytwl/images/sDdC3-LT7pM.jpg’ saved [12650/12650]
+
