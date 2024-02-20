@@ -2,7 +2,7 @@ import re
 import os
 import subprocess
 import requests
-from urllib.requess import urlretrieve as wget
+from urllib.request import urlretrieve as wget
 from random import randint
 from datetime import datetime
 from isodate import parse_duration
