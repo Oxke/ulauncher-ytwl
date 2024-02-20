@@ -424,6 +424,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
         ]
     return RenderResultListAction(items)
 
+
 def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
     try:
         search_results = requests.get(
@@ -493,7 +494,12 @@ def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
                 video_subtitle = [channl, video_published]
                 if thumbnail:
                     video_thumbnail = result["snippet"]["thumbnails"]["medium"]["url"]
-                    wget(video_thumbnail, f"IMAGES/{video_id}.png")
+                    os.system(
+                        f"wget -O {IMAGES}/{video_id}.jpg {video_thumbnail} >/dev/null & "
+                        + f"convert {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 256x256 {IMAGES}/{video_id}.png && "
+                        + f"rm {IMAGES}/{video_id}.jpg"
+                    )
+                    # wget(video_thumbnail, f"IMAGES/{video_id}.png")
                 items.append(
                     ExtensionResultItem(
                         icon= f"{IMAGES}/{video_id}.png"
@@ -526,7 +532,9 @@ def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
                 on_enter=HideWindowAction(),
             )
         ]
+
     return RenderResultListAction(items)
+
 
 class YTLWExtension(Extension):
     def __init__(self):
@@ -697,12 +705,12 @@ class KeywordQueryEventListener(EventListener):
                     video_subtitle = [video_channl, video_duration, video_published]
                     if thumbnail:
                         video_thumbnail = video_info["snippet"]["thumbnails"]["medium"]["url"]
-                        # os.system(
-                        #     f"wget -O {IMAGES}/{video_id}.jpg {video_thumbnail} > /dev/null & "
-                        #     + f"convert {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 128x128 {IMAGES}/{video_id}.png && "
-                        #     + f"rm {IMAGES}/{video_id}.jpg"
-                        # )
-                        wget(video_thumbnail, f"IMAGES/{video_id}.png")
+                        os.system(
+                            f"wget -O {IMAGES}/{video_id}.jpg {video_thumbnail} > /dev/null & "
+                            + f"convert {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 256x256 {IMAGES}/{video_id}.png && "
+                            + f"rm {IMAGES}/{video_id}.jpg"
+                        )
+                        # wget(video_thumbnail, f"IMAGES/{video_id}.png")
                     items.append(
                         ExtensionResultItem(
                             icon= f"{IMAGES}/{video_id}.png"
