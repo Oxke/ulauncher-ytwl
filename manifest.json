@@ -69,6 +69,16 @@
         "default_value": "f"
     },
     {
+        "id" : "thumbnail",
+        "type" : "select",
+        "name" : "Show thumbnail of video instead or thumbnail of channel",
+        "default_value" : "Video",
+        "options" : [
+            "Video",
+            "Channel"
+        ]
+    },
+    {
         "id": "yt_apikey",
         "type": "input",
         "name": "Youtube API key",

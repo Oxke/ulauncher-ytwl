@@ -1,19 +1,4 @@
-import re
-import os
-import subprocess
-import requests
-from random import randint
-from datetime import datetime
-from isodate import parse_duration
-from ulauncher.api.client.Extension import Extension
-from ulauncher.api.client.EventListener import EventListener
-from ulauncher.api.shared.event import KeywordQueryEvent, ItemEnterEvent
-from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
-from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
-from ulauncher.api.shared.action.HideWindowAction import HideWindowAction
-from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
-
-import fp
+import re import os import subprocess import requests from random import randint from datetime import datetime from isodate import parse_duration from ulauncher.api.client.Extension import Extension from ulauncher.api.client.EventListener import EventListener from ulauncher.api.shared.event import KeywordQueryEvent, ItemEnterEvent from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction from ulauncher.api.shared.action.HideWindowAction import HideWindowAction from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction import fp
 
 HERE = os.path.dirname(os.path.realpath(__file__))
 CONFIG = os.environ.get("HOME") + "/.config/ulauncher/com.github.oxke.ulauncher-ytwl"
@@ -48,6 +33,7 @@ def WatchVideo(vid=None, stack=False, random=False):
         else:
             url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     subprocess.Popen(["mpv", url])
+    os.system(f"rm {IMAGES}/{url[:-11]}.png")
     return HideWindowAction()
 
 
@@ -423,8 +409,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
         ]
     return RenderResultListAction(items)
 
-
-def Search(query, yt_apikey=None, append="a"):
+def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
     try:
         search_results = requests.get(
             yt_search,
@@ -444,10 +429,19 @@ def Search(query, yt_apikey=None, append="a"):
             channl = result["snippet"]["channelTitle"]
             channl_id = result["snippet"]["channelId"]
             kind = result["id"]["kind"].split("#")[1]
+            thumb = result["snippet"]["thumbnails"]["medium"]["url"]
             if kind == "channel":
+                if thumbnail:
+                    os.system(
+                        f"wget -O {IMAGES}/{channl_id}.jpg {thumb} && "
+                        + f"convert {IMAGES}/{channl_id}.jpg {IMAGES}/{channl_id}.png && "
+                        + f"rm {IMAGES}/{channl_id}.jpg"
+                    )
                 items.append(
                     ExtensionResultItem(
-                        icon="images/channel.png",
+                        icon=f"{IMAGES}/{channl_id}.png"
+                        if os.path.isfile(f"{IMAGES}/{channl_id}.png")
+                        else "images/channel.png",
                         name=title,
                         description="Enter to subscribe to channel",
                         on_enter=ExtensionCustomAction(
@@ -457,13 +451,23 @@ def Search(query, yt_apikey=None, append="a"):
                     )
                 )
             elif kind == "playlist":
+                playlist_id = result["id"]["playlistId"]
+                if thumbnail:
+                    os.system(
+                        f"wget -O {IMAGES}/{playlist_id}.jpg {thumb} && "
+                        + f"convert {IMAGES}/{playlist_id}.jpg {IMAGES}/{playlist_id}.png && "
+                        + f"rm {IMAGES}/{playlist_id}.jpg"
+                    )
                 items.append(
                     ExtensionResultItem(
+                        icon=f"{IMAGES}/{playlist_id}.png"
+                        if os.path.isfile(f"{IMAGES}/{playlist_id}.png")
+                        else "images/channel.png",
                         icon="images/playlist.png",
                         name=title,
                         description="Playlist: enter to subscribe to subscribe or add all of its videos to watchlist",
                         on_enter=ExtensionCustomAction(
-                            f"{append} {result['id']['playlistId']}", keep_app_open=True
+                            f"{append} {playlist_id}", keep_app_open=True
                         ),
                     )
                 )
@@ -473,9 +477,17 @@ def Search(query, yt_apikey=None, append="a"):
                     result["snippet"]["publishedAt"]
                 ).strftime("%H:%M, %b %-d, %y")
                 video_subtitle = [channl, video_published]
+                if thumbnail:
+                    os.system(
+                        f"wget -O {IMAGES}/{video_id}.jpg {thumb} && "
+                        + f"convert {IMAGES}/{video_id}.jpg {IMAGES}/{video_id}.png && "
+                        + f"rm {IMAGES}/{video_id}.jpg"
+                    )
                 items.append(
                     ExtensionResultItem(
-                        icon=f"{IMAGES}/{channl_id}.png"
+                        icon= f"{IMAGES}/{video_id}.jpg}"
+                        if os.path.isfile(f"{IMAGES}/{video_id}.jpg")
+                        else f"{IMAGES}/{channl_id}.png"
                         if os.path.isfile(f"{IMAGES}/{channl_id}.png")
                         else "images/icon.png",
                         name=title,
@@ -561,7 +573,8 @@ class ItemEnterEventListener(EventListener):
         getqueue = extension.preferences["getqueue"]
         if event.get_data().startswith(search):
             return Search(
-                event.get_data()[2:], extension.preferences["yt_apikey"], append
+                event.get_data()[2:], extension.preferences["yt_apikey"],
+                append, extension.preferences["thumbnail"] == "Video"
             )
         if event.get_data() == watch:
             wm = extension.preferences["watchlist-mode"]
@@ -592,6 +605,7 @@ class KeywordQueryEventListener(EventListener):
         getqueue = extension.preferences["getqueue"]
         lastfetched = extension.preferences["lastfetched"]
         fetch = extension.preferences["fetch-now"]
+        thumbnail = extension.preferences["thumbnail"] == "Video"
         if extension.preferences["yt_apikey"] == "":
             items.append(
                 ExtensionResultItem(
@@ -671,9 +685,18 @@ class KeywordQueryEventListener(EventListener):
                         video_info["snippet"]["publishedAt"]
                     ).strftime("%H:%M, %b %-d, %y")
                     video_subtitle = [video_channl, video_duration, video_published]
+                    if thumbnail:
+                        video_thumbnail = video_info["snippet"]["thumbnails"]["medium"]["url"]
+                        os.system(
+                            f"wget -O {IMAGES}/{video_id}.jpg {video_thumbnail} && "
+                            + f"convert {IMAGES}/{video_id}.jpg {IMAGES}/{video_id}.png && "
+                            + f"rm {IMAGES}/{video_id}.jpg"
+                        )
                     items.append(
                         ExtensionResultItem(
-                            icon=f"{IMAGES}/{video_channl_id}.png"
+                            icon= f"{IMAGES}/{video_id}.jpg}"
+                            if os.path.isfile(f"{IMAGES}/{video_id}.jpg")
+                            else f"{IMAGES}/{video_channl_id}.png"
                             if os.path.isfile(f"{IMAGES}/{video_channl_id}.png")
                             else "images/icon.png",
                             name=video_title,

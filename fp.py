@@ -8,9 +8,7 @@ import os
 CHANNEL_URL = "https://www.youtube.com/feeds/videos.xml?channel_id="
 PLAYLIST_URL = "https://www.youtube.com/feeds/videos.xml?playlist_id="
 CONFIG = os.environ.get("HOME") + "/.config/ulauncher/com.github.oxke.ulauncher-ytwl/"
-
-# function 'function' takes int as argument and returns int
-
+IMAGES = CONFIG + "images"
 
 def get_last_fetched(local_tz=False):
     with open(CONFIG + "lastfetched_ytfp", "r+") as f:
@@ -42,8 +40,9 @@ def fetch_feed(url, channel, last_fetched):
             end=" ",
         )
         if date_published > last_fetched:
+            yt_videoid = entry["yt_videoid"]
             with open(CONFIG + "watchlist", "a") as f:
-                f.write(entry["yt_videoid"] + "\n")
+                f.write(yt_videoid + "\n")
             print("NEW VIDEO!", end=" ")
             count += 1
         else:
