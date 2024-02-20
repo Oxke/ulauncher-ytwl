@@ -708,7 +708,7 @@ class KeywordQueryEventListener(EventListener):
                         )
                     items.append(
                         ExtensionResultItem(
-                            icon= f"{IMAGES}/{video_id}.jpg}"
+                            icon= f"{IMAGES}/{video_id}.jpg"
                             if os.path.isfile(f"{IMAGES}/{video_id}.jpg")
                             else f"{IMAGES}/{video_channl_id}.png"
                             if os.path.isfile(f"{IMAGES}/{video_channl_id}.png")
