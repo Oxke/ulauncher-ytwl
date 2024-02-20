@@ -476,8 +476,7 @@ def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
                     ExtensionResultItem(
                         icon=f"{IMAGES}/{playlist_id}.png"
                         if os.path.isfile(f"{IMAGES}/{playlist_id}.png")
-                        else "images/channel.png",
-                        icon="images/playlist.png",
+                        else "images/playlist.png",
                         name=title,
                         description="Playlist: enter to subscribe to subscribe or add all of its videos to watchlist",
                         on_enter=ExtensionCustomAction(
