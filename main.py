@@ -493,7 +493,7 @@ def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
                 if thumbnail:
                     os.system(
                         f"wget -O {IMAGES}/{video_id}.jpg {thumb} && "
-                        + f"convert {IMAGES}/{video_id}.jpg {IMAGES}/{video_id}.png && "
+                        + f"convert {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 256x256 {IMAGES}/{video_id}.png && "
                         + f"rm {IMAGES}/{video_id}.jpg"
                     )
                 items.append(
@@ -702,7 +702,7 @@ class KeywordQueryEventListener(EventListener):
                         video_thumbnail = video_info["snippet"]["thumbnails"]["medium"]["url"]
                         os.system(
                             f"wget -O {IMAGES}/{video_id}.jpg {video_thumbnail} && "
-                            + f"convert {IMAGES}/{video_id}.jpg {IMAGES}/{video_id}.png && "
+                            + f"convert {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 256x256 {IMAGES}/{video_id}.png && "
                             + f"rm {IMAGES}/{video_id}.jpg"
                         )
                     items.append(
