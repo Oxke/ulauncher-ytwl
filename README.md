@@ -10,7 +10,6 @@ Simple ulauncher extension for having a youtube watchlist that updates at each n
 - Stores a watchlist of youtube videos
 - Subscribes to channels and automatically adds new videos to the watchlist
 - Subscribes to playlists and automatically adds new videos to the watchlist
-- Lets you fetch for new videos immediately and know time of last fetch
 
 
 ## Setup
@@ -28,3 +27,5 @@ Simple ulauncher extension for having a youtube watchlist that updates at each n
 - `y a {playlist ID}` to subscribe or add all videos from a playlist (insert the playlist ID)
 - `y w` to watch the next video
 - `y q` to get the whole list
+- `y f` to fetch new videos
+- `y d` to delete the whole list

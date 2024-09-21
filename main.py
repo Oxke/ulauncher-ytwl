@@ -582,6 +582,18 @@ class ItemEnterEventListener(EventListener):
                     )
                 ]
             )
+        if event.get_data() == "DELETE":
+            os.system(f"echo > {WATCHLIST}")
+            return RenderResultListAction(
+                [
+                    ExtensionResultItem(
+                        icon="images/remove.png",
+                        name="Watchlist deleted",
+                        description="It's gone forever",
+                        on_enter=HideWindowAction(),
+                    )
+                ]
+            )
         search = extension.preferences["search"]
         append = extension.preferences["append"]
         remove = extension.preferences["remove"]
@@ -621,6 +633,7 @@ class KeywordQueryEventListener(EventListener):
         getqueue = extension.preferences["getqueue"]
         lastfetched = extension.preferences["lastfetched"]
         fetch = extension.preferences["fetch-now"]
+        del_list = extension.preferences["delete-list"]
         thumbnail = extension.preferences["thumbnail"] == "Video"
         if extension.preferences["yt_apikey"] == "":
             items.append(
@@ -749,6 +762,15 @@ class KeywordQueryEventListener(EventListener):
                     on_enter=ExtensionCustomAction("FETCH", keep_app_open=True),
                 )
             )
+        elif event.get_argument() and event.get_argument() == del_list:
+            items.append(
+                ExtensionResultItem(
+                    icon="images/remove.png",
+                    name="Delete watchlist",
+                    description="This action is irreversible",
+                    on_enter=ExtensionCustomAction("DELETE", keep_app_open=True),
+                    )
+                )
         else:
             items.append(
                 ExtensionResultItem(

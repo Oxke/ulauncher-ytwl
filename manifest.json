@@ -69,6 +69,12 @@
         "default_value": "f"
     },
     {
+        "id": "delete-list",
+        "type" : "input",
+        "name" : "Delete the whole watchlist",
+        "default_value" : "d"
+    },
+    {
         "id" : "thumbnail",
         "type" : "select",
         "name" : "Show thumbnail of video instead or thumbnail of channel",
