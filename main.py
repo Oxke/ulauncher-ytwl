@@ -14,6 +14,9 @@ from ulauncher.api.shared.action.HideWindowAction import HideWindowAction
 from ulauncher.api.shared.action.ExtensionCustomAction import ExtensionCustomAction
 import fp
 
+
+copy = lambda text: subprocess.run("xclip -selection clipboard", universal_newlines=True, input=text, shell=True)
+
 HERE = os.path.dirname(os.path.realpath(__file__))
 CONFIG = os.environ.get("HOME") + "/.config/ulauncher/com.github.oxke.ulauncher-ytwl"
 WATCHLIST = CONFIG + "/watchlist"
@@ -26,6 +29,7 @@ pl_items = "https://www.googleapis.com/youtube/v3/playlistItems"
 ch_info = "https://www.googleapis.com/youtube/v3/channels"
 yt_search = "https://www.googleapis.com/youtube/v3/search"
 yt_watch = "https://www.youtube.com/watch?v="
+yt_playlist = "https://www.youtube.com/playlist?list="
 
 
 def WatchVideo(vid=None, stack=False, random=False):
@@ -46,7 +50,7 @@ def WatchVideo(vid=None, stack=False, random=False):
             f.truncate()
         else:
             url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-    subprocess.Popen(["mpv", url])
+    subprocess.Popen(["mpv", "--ytdl-raw-options=cookies-from-browser=brave", url])
     os.system(f"rm {IMAGES}/{url[:-11]}.png")
     return HideWindowAction()
 
@@ -105,7 +109,7 @@ def SubscribeToPlaylist(playlist_id, remove, yt_apikey):
         thumb = playlist_info["snippet"]["thumbnails"]["medium"]["url"]
         os.system(
             f"wget -q -O {IMAGES}/{playlist_id}.jpg {thumb} && "
-            + f"convert {IMAGES}/{playlist_id}.jpg {IMAGES}/{playlist_id}.png && "
+            + f"magick {IMAGES}/{playlist_id}.jpg {IMAGES}/{playlist_id}.png && "
             + f"rm {IMAGES}/{playlist_id}.jpg"
         )
         items = [
@@ -127,7 +131,8 @@ def SubscribeToPlaylist(playlist_id, remove, yt_apikey):
         ]
 
 
-def AddAllPlaylistVideosToWatchlist(playlist_id, remove, yt_apikey):
+def AddAllPlaylistVideosToWatchlist(playlist_id, remove, yt_apikey,
+                                    getqueue="q"):
     try:
         playlist_items = requests.get(
             pl_items,
@@ -168,7 +173,7 @@ def AddAllPlaylistVideosToWatchlist(playlist_id, remove, yt_apikey):
                     icon="images/append.png",
                     name="ADDED all videos from " + playlist_id,
                     description="Enter to start watching them",
-                    on_enter=ExtensionCustomAction("q" + video_ids[0]),
+                    on_enter=ExtensionCustomAction(getqueue + video_ids[0]),
                 )
             ]
         )
@@ -185,17 +190,18 @@ def AddAllPlaylistVideosToWatchlist(playlist_id, remove, yt_apikey):
         )
 
 
-def AppendToQueue(url, yt_apikey=None, remove=False):
+def AppendToQueue(url, yt_apikey=None, remove=False, info=False, append="a",
+                  getqueue="q"):
     ytvideolink = re.compile(
-        "^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|live\/|v\/|shorts\/)?)([\w\-]{11})(\S+)?$"
+        r"^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|live\/|v\/|shorts\/)?)([\w\-]{11})(\S+)?$"
     )
-    ytplaylistlink = re.compile("PL[\w\-]{32}")
+    ytplaylistlink = re.compile(r"PL[A-Za-z0-9_\-]{32}")
     ytchannellink = re.compile(
-        "^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:channel\/|c\/)?)([\w\-]{24}|\@[\w\-]+)(\S+)?$"
+        r"^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:channel\/|c\/)?)([\w\-]{24}|\@[\w\-]+)(\S+)?$"
     )
-    m_video = ytvideolink.match(url)
-    m_playlist = ytplaylistlink.match(url)
-    m_channel = ytchannellink.match(url)
+    m_video = ytvideolink.search(url)
+    m_playlist = ytplaylistlink.search(url)
+    m_channel = ytchannellink.search(url)
     if m_video:
         video_id = m_video.group(6)
         if remove:
@@ -211,12 +217,13 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
                     icon="images/remove.png",
                     name="REMOVED: " + video_id,
                     description="enter to watch anyway",
-                    on_enter=ExtensionCustomAction("q" + video_id),
+                    on_enter=ExtensionCustomAction(getqueue + video_id),
                 )
             ]
             return RenderResultListAction(items)
-        with open(WATCHLIST, "a") as f:
-            f.write(video_id + "\n")
+        if not info:
+            with open(WATCHLIST, "a") as f:
+                f.write(video_id + "\n")
         try:
             video_info = requests.get(
                 yt_info,
@@ -241,16 +248,34 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
                 video_channl,
                 video_duration,
                 video_published,
-                "enter to watch immediately",
+                "enter to add to watch-list" if info else "enter to watch immediately",
             ]
-            items = [
-                ExtensionResultItem(
-                    icon="images/append.png",
-                    name="ADDED: " + video_title,
-                    description=" - ".join(video_subtitle),
-                    on_enter=ExtensionCustomAction("q" + video_id),
-                )
-            ]
+            if info:
+                items = [
+                    ExtensionResultItem(
+                        icon="images/append.png",
+                        name="add " + video_title,
+                        description=" - ".join(video_subtitle),
+                        on_enter=ExtensionCustomAction(append + " " + url,
+                                                       keep_app_open=True),
+                    ),
+                    ExtensionResultItem(
+                        icon="images/copy.png",
+                        name="Copy link to clipboard",
+                        description = yt_watch + video_id,
+                        on_enter=ExtensionCustomAction("Y" + yt_watch +
+                                                       video_id),
+                    )
+                ]
+            else:
+                items = [
+                    ExtensionResultItem(
+                        icon="images/append.png",
+                        name="ADDED: " + video_title,
+                        description=" - ".join(video_subtitle),
+                        on_enter=ExtensionCustomAction(getqueue + video_id),
+                    )
+                ]
         except Exception as e:
             items = [
                 ExtensionResultItem(
@@ -262,7 +287,7 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
             ]
 
     elif m_playlist:
-        playlist_id = url
+        playlist_id = m_playlist.group(0)
         try:
             playlist_info = requests.get(
                 pl_info,
@@ -315,6 +340,17 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
                         ),
                     ),
                 ]
+
+                if info:
+                    items.append(
+                    ExtensionResultItem(
+                        icon=f"images/copy.png",
+                        name="Copy link to clipboard",
+                        description = yt_playlist + playlist_id,
+                        on_enter=ExtensionCustomAction(
+                            "Y" + yt_playlist + playlist_id,
+                        ),
+                    ))
         except Exception as e:
             items = [
                 ExtensionResultItem(
@@ -376,32 +412,52 @@ def AppendToQueue(url, yt_apikey=None, remove=False):
             channel_info = channel_info.json()["items"][0]
             channel_title = channel_info["snippet"]["title"]
 
-            with open(SUBSCRIPTIONS, "r+") as f:
-                if channel_id not in f.read():
-                    f.write(
-                        channel_id
-                        + "           | "
-                        + channel_title
-                        + " " * (23 - len(channel_title))
-                        + "|\n"
-                    )
+            if not info:
+                with open(SUBSCRIPTIONS, "r+") as f:
+                    if channel_id not in f.read():
+                        f.write(
+                            channel_id
+                            + "           | "
+                            + channel_title
+                            + " " * (23 - len(channel_title))
+                            + "|\n"
+                        )
 
-            channel_description = channel_info["snippet"]["description"]
             thumb = channel_info["snippet"]["thumbnails"]["medium"]["url"]
             os.system(
                 f"wget -q -O {IMAGES}/{channel_id}.jpg {thumb} && "
-                + f"convert {IMAGES}/{channel_id}.jpg {IMAGES}/{channel_id}.png && "
+                + f"magick {IMAGES}/{channel_id}.jpg {IMAGES}/{channel_id}.png && "
                 + f"rm {IMAGES}/{channel_id}.jpg"
             )
 
-            items = [
-                ExtensionResultItem(
-                    icon=f"{IMAGES}/{channel_id}.png",
-                    name="ADDED CHANNEL: " + channel_title,
-                    description=channel_description,
+            channel_description = channel_info["snippet"]["description"]
+
+            if info:
+                items = [
+                    ExtensionResultItem(
+                        icon="images/append.png",
+                        name="subscribe to " + channel_title,
+                        description=channel_description,
+                        on_enter=ExtensionCustomAction(append + " " +
+                                                       channel_id,
+                                                       keep_app_open=True),
+                    ),
+                    ExtensionResultItem(
+                        icon="images/copy.png",
+                        name="Copy link to cliboard",
+                        description = (churl:=f"https://www.youtube.com/channel/{channel_id}"),
+                        on_enter=ExtensionCustomAction("Y" + churl),
+                    ),
+                ]
+            else:
+                items = [
+                    ExtensionResultItem(
+                        icon=f"{IMAGES}/{channel_id}.png",
+                        name="ADDED CHANNEL: " + channel_title,
+                        description=channel_description,
                     on_enter=HideWindowAction(),
-                )
-            ]
+                    )
+                ]
         except Exception as e:
             items = [
                 ExtensionResultItem(
@@ -449,7 +505,7 @@ def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
                 if thumbnail:
                     os.system(
                         f"wget -q -O {IMAGES}/{channl_id}.jpg {thumb} && "
-                        + f"convert {IMAGES}/{channl_id}.jpg {IMAGES}/{channl_id}.png && "
+                        + f"magick {IMAGES}/{channl_id}.jpg {IMAGES}/{channl_id}.png && "
                         + f"rm {IMAGES}/{channl_id}.jpg"
                     )
                 items.append(
@@ -460,7 +516,7 @@ def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
                         name=title,
                         description="Enter to subscribe to channel",
                         on_enter=ExtensionCustomAction(
-                            f"{append} https://www.youtube.com/channel/{channl_id}",
+                            f"i https://www.youtube.com/channel/{channl_id}",
                             keep_app_open=True,
                         ),
                     )
@@ -470,7 +526,7 @@ def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
                 if thumbnail:
                     os.system(
                         f"wget -q -O {IMAGES}/{playlist_id}.jpg {thumb} && "
-                        + f"convert {IMAGES}/{playlist_id}.jpg {IMAGES}/{playlist_id}.png && "
+                        + f"magick {IMAGES}/{playlist_id}.jpg {IMAGES}/{playlist_id}.png && "
                         + f"rm {IMAGES}/{playlist_id}.jpg"
                     )
                 items.append(
@@ -481,7 +537,7 @@ def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
                         name=title,
                         description="Playlist: enter to subscribe to subscribe or add all of its videos to watchlist",
                         on_enter=ExtensionCustomAction(
-                            f"{append} {playlist_id}", keep_app_open=True
+                            f"i {playlist_id}", keep_app_open=True
                         ),
                     )
                 )
@@ -495,7 +551,7 @@ def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
                     video_thumbnail = result["snippet"]["thumbnails"]["medium"]["url"]
                     os.system(
                         f"wget -q -O {IMAGES}/{video_id}.jpg {video_thumbnail} >/dev/null & "
-                        + f"convert {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 256x256 {IMAGES}/{video_id}.png && "
+                        + f"magick {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 256x256 {IMAGES}/{video_id}.png && "
                         + f"rm {IMAGES}/{video_id}.jpg"
                     )
                 items.append(
@@ -508,7 +564,7 @@ def Search(query, /, yt_apikey=None, append="a", thumbnail=True):
                         name=title,
                         description=" - ".join(video_subtitle),
                         on_enter=ExtensionCustomAction(
-                            f"{append} {yt_watch}{video_id}", keep_app_open=True
+                            f"i {yt_watch}{video_id}", keep_app_open=True
                         ),
                     )
                 )
@@ -564,6 +620,7 @@ class ItemEnterEventListener(EventListener):
                 playlist_id,
                 event.get_data()[6] == "r",
                 yt_apikey=extension.preferences["yt_apikey"],
+                getqueue=extension.preferences["getqueue"]
             )
 
         if event.get_data() == "FETCH":
@@ -618,9 +675,19 @@ class ItemEnterEventListener(EventListener):
                 event.get_data()[2:],
                 extension.preferences["yt_apikey"],
                 remove=event.get_data().startswith(remove),
+                append=append, getqueue=getqueue
             )
         if event.get_data().startswith(getqueue):
             return WatchVideo(vid=event.get_data()[1:])
+        if event.get_data().startswith("i"):
+            return AppendToQueue(
+                event.get_data()[2:],
+                extension.preferences["yt_apikey"],
+                remove=False, info=True,
+                append=append, getqueue=getqueue)
+        if event.get_data().startswith("Y"):
+            copy(event.get_data()[1:])
+            return HideWindowAction()
 
 
 class KeywordQueryEventListener(EventListener):
@@ -718,7 +785,7 @@ class KeywordQueryEventListener(EventListener):
                         video_thumbnail = video_info["snippet"]["thumbnails"]["medium"]["url"]
                         os.system(
                             f"wget -q -O {IMAGES}/{video_id}.jpg {video_thumbnail} > /dev/null & "
-                            + f"convert {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 256x256 {IMAGES}/{video_id}.png && "
+                            + f"magick {IMAGES}/{video_id}.jpg -gravity center -background \"rgba(0, 0, 0, 0)\" -extent 256x256 {IMAGES}/{video_id}.png && "
                             + f"rm {IMAGES}/{video_id}.jpg"
                         )
                     items.append(
@@ -730,7 +797,7 @@ class KeywordQueryEventListener(EventListener):
                             else "images/icon.png",
                             name=video_title,
                             description=" - ".join(video_subtitle),
-                            on_enter=ExtensionCustomAction("q" + video_id),
+                            on_enter=ExtensionCustomAction(getqueue + video_id),
                         )
                     )
             except Exception as e:
